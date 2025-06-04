@@ -47,7 +47,7 @@ El enfoque propuesto para abordar el problema de formación de equipos multiples
 
     \item \textbf{Generación de datos sintéticos:} Para evaluar y validar el modelo, se generan conjuntos de datos representativos de escenarios reales. Las relaciones sociales entre individuos y los requisitos de los proyectos se crean a partir de reglas controladas que simulan características típicas del contexto organizacional, asegurando diversidad en las instancias de prueba. Los datos se almacenan en formato JSON para facilitar su reutilización y análisis.
 
-    \item \textbf{Implementación computacional:} Se emplea Pyomo, un lenguaje de modelado algebraico en Python, para construir el modelo de optimización. La solución se obtiene mediante el solver Bonmin, capaz de manejar problemas de optimización no lineal entera mixta, lo cual es necesario debido a la inclusión de asignaciones de tiempo fraccionarias y discretas. El sistema permite configurar el modelo mediante archivos externos, lo que facilita la adaptación a diferentes tamaños y características del problema sin necesidad de modificar la estructura del código.
+    \item \textbf{Implementación computacional:} Se emplea Pyomo\cite{pyomo_hart2011}, un lenguaje de modelado algebraico en Python, para construir el modelo de optimización. La solución se obtiene mediante el solver Bonmin\cite{bonmin_bonami2008}, capaz de manejar problemas de optimización no lineal entera mixta, lo cual es necesario debido a la inclusión de asignaciones de tiempo fraccionarias y discretas. El sistema permite configurar el modelo mediante archivos externos, lo que facilita la adaptación a diferentes tamaños y características del problema sin necesidad de modificar la estructura del código.
 
     \item \textbf{Resolución y análisis:} Se realizan experimentos numéricos sobre diversas instancias para evaluar la efectividad y escalabilidad del enfoque. Los resultados se analizan desde el punto de vista de la maximización de la afinidad social, la factibilidad de las soluciones y el comportamiento computacional, permitiendo identificar fortalezas y áreas de mejora del modelo.
 \end{enumerate}
@@ -216,7 +216,7 @@ El resultado del modelo debe interpretarse como una recomendación fundamentada,
 
 \section{Implementación Computacional}
 
-Para resolver el modelo de optimización propuesto se utilizó \textbf{Pyomo}, un lenguaje de modelado algebraico en Python que permite definir variables, restricciones y funciones objetivo de forma declarativa. La elección de Pyomo responde a su flexibilidad para trabajar con modelos de optimización no lineales y su compatibilidad con diversos solucionadores. Dado que el modelo incorpora variables enteras (para la selección de fracciones de tiempo discretas) y una función objetivo no lineal, se clasifica como un problema de Programación No Lineal Entera Mixta (MINLP), para lo cual se utilizó el solver Bonmin. El código fuente completo de esta implementación, incluyendo la generación de datos y la resolución del modelo, está disponible públicamente\footnote{El código fuente puede consultarse en: https://github.com/DarkNacho/Multiple-Team-Formation}.
+Para resolver el modelo de optimización propuesto se utilizó \textbf{Pyomo}\cite{pyomo_hart2011}, un lenguaje de modelado algebraico en Python que permite definir variables, restricciones y funciones objetivo de forma declarativa. La elección de Pyomo responde a su flexibilidad para trabajar con modelos de optimización no lineales y su compatibilidad con diversos solucionadores. Dado que el modelo incorpora variables enteras (para la selección de fracciones de tiempo discretas) y una función objetivo no lineal, se clasifica como un problema de Programación No Lineal Entera Mixta (MINLP), para lo cual se utilizó el solver Bonmin\cite{bonmin_bonami2008}. El código fuente completo de esta implementación, incluyendo la generación de datos y la resolución del modelo, está disponible públicamente\footnote{El código fuente puede consultarse en: https://github.com/DarkNacho/Multiple-Team-Formation}.
 
 \subsection{Descripción del proceso}
 
@@ -257,9 +257,20 @@ El uso de Pyomo y el solver Bonmin ha demostrado ser efectivo para resolver el p
 \begin{thebibliography}{00}
 
     \bibitem{gutierrez2016multiple}
-    Gutiérrez, J. H., Astudillo, C. A., Ballesteros-Pérez, P., Mora-Melià, D., \& Candia-Véjar, A. (2016).
-    The multiple team formation problem using sociometry.
-    \textit{Computers \& Operations Research}, 75, 150--162. https://doi.org/10.1016/j.cor.2016.05.012
+    J. H. Gutiérrez, C. A. Astudillo, P. Ballesteros-Pérez, D. Mora-Melià, \& A. Candia-Véjar,
+    \textit{The multiple team formation problem using sociometry},
+    Computers \& Operations Research, vol. 75, pp. 150--162, 2016. DOI: \texttt{10.1016/j.cor.2016.05.012}.
+
+    \bibitem{pyomo_hart2011}
+    W. E. Hart, J. P. Watson, \& D. L. Woodruff,
+    \textit{Pyomo: modeling and solving mathematical programs in Python},
+    Mathematical Programming Computation, vol. 3, no. 3, pp. 219--260, 2011. DOI: \texttt{10.1007/s12532-011-0026-8}.
+
+
+    \bibitem{bonmin_bonami2008}
+    Pierre Bonami, Lorenz T. Biegler, Andrew R. Conn, Gérard Cornuéjols, Ignacio E. Grossmann, Carl D. Laird, Jon Lee, Andrea Lodi, François Margot, Nicolas Sawaya, Andreas Wächter,
+    \textit{An algorithmic framework for convex mixed integer nonlinear programs},
+    Discrete Optimization, vol. 5, no. 2, pp. 186--204, May 2008. DOI: \texttt{10.1016/j.disopt.2006.10.011}.
 
 \end{thebibliography}
 

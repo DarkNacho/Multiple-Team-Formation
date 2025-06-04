@@ -1,3 +1,16 @@
+# LaTeX auxiliary files
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
