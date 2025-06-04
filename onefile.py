@@ -400,7 +400,7 @@ class MTFP_Optimizer:
             """Restricción (3): ∑_{i∈Q_k} x_{i,j} ≥ R_{k,j} ∀j∈J, ∀k∈K
             Las personas con habilidad k deben cumplir los requerimientos del proyecto j.
             """
-            return sum(m.x[i, j] for i in m.Q[k]) >= m.R[j, k]
+            return sum(m.x[i, j] for i in m.Q[k]) == m.R[j, k]
 
         # Restricción para asegurar que se elija exactamente una fracción de tiempo para cada x_{i,j}
         @model.Constraint(model.P, model.J)
@@ -429,7 +429,7 @@ class MTFP_Optimizer:
                 # Denominador: (∑_{k∈K} R_{k,j})²
                 # denominator = sum(m.R[j, k] for k in m.K) ** 2
                 T = sum(m.R[j, k] for k in m.K)
-                denominator = T * (T - 1)
+                denominator = T**2  # T^2
                 ej = (1 + numerator / denominator) / 2 if denominator != 0 else 0.0
                 # ej = 0.5 * (1 + numerator / denominator) if denominator != 0 else 0.0
 
@@ -543,7 +543,7 @@ class MTFP_Optimizer:
 if __name__ == "__main__":
 
     dataGen = DataGenerator()
-    data = dataGen.load_from_json("test_cases/documentado/caso3_ideal.json")
+    data = dataGen.load_from_json("test_cases\incremental\caso_30p_3pr.json")
     """
     data = dataGen.generate_random_instance(
         num_people=300,

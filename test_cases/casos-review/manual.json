@@ -1,0 +1,25 @@
+{
+  "people": [{ "skill": "S1" }, { "skill": "S1" }, { "skill": "S2" }],
+  "projects": [
+    {
+      "requirements": {
+        "S1": 1.0,
+        "S2": 1.0
+      },
+      "weight": 0.6
+    },
+    {
+      "requirements": {
+        "S1": 1.0
+      },
+      "weight": 0.4
+    }
+  ],
+  "skills": ["S1", "S2"],
+  "sociometric": [
+    [1, 1, 0],
+    [1, 1, 0],
+    [0, 0, 1]
+  ],
+  "time_fractions": [0.0, 0.5, 1.0]
+}
