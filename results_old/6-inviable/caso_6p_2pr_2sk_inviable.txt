@@ -1,0 +1,8 @@
+No se encontró solución óptima: el problema es inviable (infeasible).
+Esto significa que no existe ninguna asignación posible que cumpla todas las restricciones dadas las personas, habilidades y requerimientos.
+
+Estado del solver: infeasible
+Mensaje del solver: bonmin\x3a Infeasible problem
+
+Tiempo de ejecución: 0.12 segundos
+==================================================

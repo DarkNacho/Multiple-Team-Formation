@@ -24,7 +24,7 @@ class Person(BaseModel):
         skill (str): Habilidad de la persona (debe existir en InstanceData.skills)
     """
 
-    skill: str
+    skills: List[str]
 
 
 class Project(BaseModel):
@@ -90,7 +90,7 @@ class DataGenerator:
         # --- NUEVO: chequeo de viabilidad ---
         max_time = max(time_fractions)
         for skill in skills:
-            cap = sum(1 for p in people if p.skill == skill) * max_time
+            cap = sum(1 for p in people if skill in p.skills) * max_time
             req = sum(pr.requirements.get(skill, 0.0) for pr in projects)
             if req > cap + 1e-6:
                 print(
@@ -107,10 +107,15 @@ class DataGenerator:
 
     @staticmethod
     def _generate_people(num_people: int, skills: List[str]) -> List[Person]:
-        """Genera una lista de personas con habilidades aleatorias."""
-        return [Person(skill=random.choice(skills)) for _ in range(num_people)]
+        """Genera una lista de personas con una o más habilidades aleatorias."""
+        people = []
+        for _ in range(num_people):
+            # Asignar un número aleatorio de habilidades (e.g., de 1 a 3)
+            num_skills_to_assign = random.randint(1, min(3, len(skills)))
+            person_skills = random.sample(skills, num_skills_to_assign)
+            people.append(Person(skills=person_skills))
+        return people
 
-    # ...existing code...
     @staticmethod
     def _generate_projects(
         num_projects: int,
@@ -118,64 +123,62 @@ class DataGenerator:
         people: List[Person],
         time_fractions: List[float],
     ) -> List[Project]:
-        """Genera proyectos viables: la suma de requerimientos por habilidad no excede la capacidad total."""
+        """Genera proyectos viables y realistas: solo incluye habilidades requeridas (valor > 0) en los requerimientos."""
         max_time = max(time_fractions)
+        min_fraction = min([f for f in time_fractions if f > 0], default=1.0)
         skill_capacity = {
-            skill: sum(1 for p in people if p.skill == skill) * max_time
+            skill: sum(1 for p in people if skill in p.skills) * max_time
             for skill in skills
         }
 
-        # Para cada habilidad, reparte la capacidad total entre los proyectos
-        skill_shares = {}
-        for skill in skills:
-            if skill_capacity[skill] == 0:
-                skill_shares[skill] = [0.0] * num_projects
-            else:
-                cuts = sorted([random.random() for _ in range(num_projects - 1)])
-                shares = (
-                    [cuts[0]]
-                    + [cuts[i] - cuts[i - 1] for i in range(1, len(cuts))]
-                    + [1 - cuts[-1]]
-                )
-                min_share = 0.3 / num_projects
-                shares = [max(s, min_share) for s in shares]
-                total = sum(shares)
-                shares = [s / total for s in shares]
-                skill_shares[skill] = shares
-
-        # Ahora genera los requerimientos de cada proyecto usando los shares
-        raw_projects = []
-        total_weight = 0.0
-        # --- Genera requerimientos redondeados ---
         reqs_per_project = []
         for j in range(num_projects):
             reqs = {}
-            for skill in skills:
+            # Elegir al menos una habilidad requerida por proyecto
+            possible_skills = [
+                skill for skill in skills if skill_capacity[skill] >= min_fraction
+            ]
+            n_required = (
+                random.randint(1, len(possible_skills)) if possible_skills else 0
+            )
+            required_skills = (
+                set(random.sample(possible_skills, n_required))
+                if n_required > 0
+                else set()
+            )
+            for skill in required_skills:
                 cap = skill_capacity[skill]
-                req = round(skill_shares[skill][j] * cap, 1)
-                reqs[skill] = req
+                max_units = int(cap // min_fraction)
+                if max_units > 0:
+                    units = random.randint(1, max_units)
+                    req = round(units * min_fraction, 6)
+                    if req > 0:
+                        reqs[skill] = req
             reqs_per_project.append(reqs)
-        # --- Ajusta para no exceder la capacidad por habilidad ---
+
+        # Ajusta para que la suma total de requerimientos por habilidad no exceda la capacidad
         for skill in skills:
             cap = skill_capacity[skill]
-            total_req = sum(reqs[skill] for reqs in reqs_per_project)
-            if total_req > cap:
-                exceso = total_req - cap
-                # Ordena proyectos por requerimiento descendente para quitar primero a los que más tienen
-                sorted_indices = sorted(
-                    range(num_projects),
-                    key=lambda j: reqs_per_project[j][skill],
-                    reverse=True,
-                )
-                for j in sorted_indices:
-                    if exceso <= 0:
-                        break
-                    reducible = min(reqs_per_project[j][skill], exceso)
-                    reqs_per_project[j][skill] -= reducible
-                    reqs_per_project[j][skill] = round(reqs_per_project[j][skill], 1)
-                    exceso -= reducible
-        # --- Fin ajuste ---
+            total_req = sum(reqs.get(skill, 0.0) for reqs in reqs_per_project)
+            while total_req > cap:
+                # Quita una fracción mínima a un proyecto aleatorio que tenga ese skill > min_fraction
+                candidates = [
+                    j
+                    for j in range(num_projects)
+                    if reqs_per_project[j].get(skill, 0.0) >= min_fraction * 2
+                ]
+                if not candidates:
+                    break
+                j = random.choice(candidates)
+                reqs_per_project[j][skill] -= min_fraction
+                reqs_per_project[j][skill] = round(reqs_per_project[j][skill], 6)
+                if reqs_per_project[j][skill] <= 0:
+                    del reqs_per_project[j][skill]
+                total_req = sum(reqs.get(skill, 0.0) for reqs in reqs_per_project)
 
+        # Asigna pesos aleatorios y normaliza
+        raw_projects = []
+        total_weight = 0.0
         for j in range(num_projects):
             weight = random.uniform(0.5, 2.0)
             raw_projects.append((reqs_per_project[j], weight))
@@ -247,7 +250,7 @@ class DataGenerator:
         """Imprime la lista de personas."""
         print("\nPERSONAS:")
         for i, person in enumerate(people):
-            print(f"  Persona {i + 1}: Habilidad = {person.skill}")
+            print(f"  Persona {i + 1}: Habilidades = {', '.join(person.skills)}")
 
     @staticmethod
     def _print_projects(projects: List[Project]):
@@ -305,7 +308,7 @@ class MTFP_Optimizer:
         Personas con habilidad k.
         """
         return {
-            k: [i for i, p in enumerate(self.data.people) if p.skill == k]
+            k: [i for i, p in enumerate(self.data.people) if k in p.skills]
             for k in self.data.skills
         }
 
@@ -357,32 +360,32 @@ class MTFP_Optimizer:
             model.F, initialize=lambda m, f_idx: self.data.time_fractions[f_idx]
         )
 
+        # Parámetro que indica si la persona i tiene la habilidad k
+        model.HasSkill = pyo.Param(
+            model.P,
+            model.K,
+            initialize=lambda m, i, k: 1 if k in self.data.people[i].skills else 0,
+        )
+
         # -------------------------------------
         # Variables de Decisión
         # -------------------------------------
-        # x_{i,j}: Fracción de tiempo de la persona i en el proyecto j
-
-        """
+        # x_{i,j,k}: Fracción de tiempo de la persona i en el proyecto j usando la habilidad k
         model.x = pyo.Var(
             model.P,
             model.J,
-            domain=pyo.Reals,
-            bounds=(
-                min(self.data.time_fractions),
-                max(self.data.time_fractions),
-            ),  # <-- Ajustar límites según las fracciones de tiempo permitidas, ej: [0.0, 0.5, 1.0], aquí se ajusta a del minimo al máximo dado, seguna las fracciones de tiempo permitidas.
-        )"""
+            model.K,
+            domain=pyo.NonNegativeReals,
+        )
 
-        # x_{i,j}: Fracción de tiempo de la persona i en el proyecto j
-        # MODIFICADO: Dominio NonNegativeReals, sin bounds explícitos aquí.
-        # Su valor será determinado por y_choice.
-        model.x = pyo.Var(
+        # x_total_{i,j}: Fracción de tiempo TOTAL de la persona i en el proyecto j
+        model.x_total = pyo.Var(
             model.P,
             model.J,
             domain=pyo.NonNegativeReals,
         )
 
-        # y_choice_{i,j,f}: Variable binaria que es 1 si la fracción f se elige para x_{i,j}
+        # y_choice_{i,j,f}: Variable binaria que es 1 si la fracción f se elige para x_total_{i,j}
         model.y_choice = pyo.Var(model.P, model.J, model.F, domain=pyo.Binary)
 
         # -------------------------------------
@@ -390,27 +393,39 @@ class MTFP_Optimizer:
         # -------------------------------------
         @model.Constraint(model.P)
         def total_time(m, i):
-            """Restricción (2): ∑_{j∈J} x_{i,j} ≤ 1 ∀i∈P
+            """Restricción (2): ∑_{j∈J} x_total_{i,j} ≤ 1 ∀i∈P
             Las personas pueden ocupar un máximo de todo su tiempo en los proyectos (No mayor a 1 -> 100%).
             """
-            return sum(m.x[i, j] for j in m.J) <= 1
+            return sum(m.x_total[i, j] for j in m.J) <= 1
 
         @model.Constraint(model.J, model.K)
         def skill_requirement(m, j, k):
-            """Restricción (3): ∑_{i∈Q_k} x_{i,j} ≥ R_{k,j} ∀j∈J, ∀k∈K
+            """Restricción (3): ∑_{i∈P} x_{i,j,k} = R_{k,j} ∀j∈J, ∀k∈K
             Las personas con habilidad k deben cumplir los requerimientos del proyecto j.
+            La restricción HasSkill_rule se encarga de que solo aporten personas con esa habilidad.
             """
-            return sum(m.x[i, j] for i in m.Q[k]) == m.R[j, k]
+            return sum(m.x[i, j, k] for i in m.P) == m.R[j, k]
 
-        # Restricción para asegurar que se elija exactamente una fracción de tiempo para cada x_{i,j}
+        # Restricción para asegurar que una persona solo puede ser asignada con una habilidad que posee
+        @model.Constraint(model.P, model.J, model.K)
+        def HasSkill_rule(m, i, j, k):
+            # La dedicación máxima es 1, por lo que esto funciona como una restricción Big-M
+            return m.x[i, j, k] <= m.HasSkill[i, k]
+
+        # Restricción para enlazar la variable de tiempo total con la de tiempo por habilidad
+        @model.Constraint(model.P, model.J)
+        def link_x_total_rule(m, i, j):
+            return m.x_total[i, j] == sum(m.x[i, j, k] for k in m.K)
+
+        # Restricción para asegurar que se elija exactamente una fracción de tiempo para cada x_total_{i,j}
         @model.Constraint(model.P, model.J)
         def force_one_fraction_rule(m, i, j):
             return sum(m.y_choice[i, j, f_idx] for f_idx in m.F) == 1
 
-        # Restricción para definir x_{i,j} basado en la y_choice seleccionada
+        # Restricción para definir x_total_{i,j} basado en la y_choice seleccionada
         @model.Constraint(model.P, model.J)
         def define_x_from_choice_rule(m, i, j):
-            return m.x[i, j] == sum(
+            return m.x_total[i, j] == sum(
                 m.tf_map[f_idx] * m.y_choice[i, j, f_idx] for f_idx in m.F
             )
 
@@ -421,17 +436,17 @@ class MTFP_Optimizer:
             """Objetivo: Maximizar E = ∑_{j∈J} w_j * e_j"""
             total_efficiency = 0.0
             for j in m.J:
-                # Numerador: ∑_{i,h∈P} S_{i,h}x_{i,j}x_{h,j}
+                # Numerador: ∑_{i,h∈P} S_{i,h}*x_total_{i,j}*x_total_{h,j}
                 numerator = sum(
-                    m.S[i1, i2] * m.x[i1, j] * m.x[i2, j] for i1 in m.P for i2 in m.P
+                    m.S[i1, i2] * m.x_total[i1, j] * m.x_total[i2, j]
+                    for i1 in m.P
+                    for i2 in m.P
                 )
 
                 # Denominador: (∑_{k∈K} R_{k,j})²
-                # denominator = sum(m.R[j, k] for k in m.K) ** 2
                 T = sum(m.R[j, k] for k in m.K)
-                denominator = T**2  # T^2
+                denominator = T**2
                 ej = (1 + numerator / denominator) / 2 if denominator != 0 else 0.0
-                # ej = 0.5 * (1 + numerator / denominator) if denominator != 0 else 0.0
 
                 total_efficiency += m.w[j] * ej
             return total_efficiency
@@ -479,10 +494,20 @@ class MTFP_Optimizer:
                 print(f"   -> {skill}: {req}")
 
             print(f"\n - Equipo asignado:")
-            team = [i for i in self.model.P if pyo.value(self.model.x[i, j]) > 0.01]
+            team = [
+                i for i in self.model.P if pyo.value(self.model.x_total[i, j]) > 0.001
+            ]
             for i in team:
-                alloc = pyo.value(self.model.x[i, j])
-                print(f"   -> Persona {i} ({self.data.people[i].skill}): {alloc:.1%}")
+                alloc = pyo.value(self.model.x_total[i, j])
+                person_skills = ", ".join(self.data.people[i].skills)
+                print(
+                    f"   -> Persona {i} ({person_skills}): {alloc:.1%} de tiempo total."
+                )
+                # Detalle de tiempo por habilidad
+                for k in self.model.K:
+                    skill_alloc = pyo.value(self.model.x[i, j, k])
+                    if skill_alloc > 0.001:
+                        print(f"      - {k}: {skill_alloc:.1%}")
 
             print(f"\n - Cálculo de Eficiencia (e_{j+1}):")
             print(f"   • Suma de afinidades: {numerator:.2f}")
@@ -526,7 +551,11 @@ class MTFP_Optimizer:
         """Calcula la eficiencia de un proyecto (e_j)."""
         # Convertir el generador en una suma evaluada
         numerator = sum(
-            pyo.value(self.model.S[i1, i2] * self.model.x[i1, j] * self.model.x[i2, j])
+            pyo.value(
+                self.model.S[i1, i2]
+                * self.model.x_total[i1, j]
+                * self.model.x_total[i2, j]
+            )
             for i1 in self.model.P
             for i2 in self.model.P
         )
@@ -543,38 +572,22 @@ class MTFP_Optimizer:
 if __name__ == "__main__":
 
     dataGen = DataGenerator()
-    data = dataGen.load_from_json("test_cases\incremental\caso_30p_3pr.json")
-    """
+
     data = dataGen.generate_random_instance(
-        num_people=300,
-        num_projects=30,
+        num_people=20,  # Reducido para pruebas iniciales con el modelo más complejo
+        num_projects=3,
         skills=[
             "Backend",
             "Frontend",
             "DevOps",
             "QA",
             "UX/UI",
-            "Data Science",
-            "Mobile",
-            "Cloud",
-            "Security",
-            "AI",
-            "Product",
-            "Scrum Master",
-            "Database",
-            "Embedded",
-            "Support",
-            "Networking",
-            "ML Ops",
-            "BI",
-            "Game Dev",
-            "SysAdmin",
         ],
-        time_fractions=[0.0, 1.0],
+        time_fractions=[0.0, 0.5, 1.0],
         positive_prob=0.3,
         seed=42,
     )
-    """
+
     start_time = time.time()
     optimizer = MTFP_Optimizer(data)
     results = optimizer.solve(solver="bonmin", tee=False)

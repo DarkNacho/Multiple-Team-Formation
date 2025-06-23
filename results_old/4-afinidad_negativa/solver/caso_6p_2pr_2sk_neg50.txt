@@ -1,0 +1,52 @@
+==================================================
+========= RESULTADOS DE LA OPTIMIZACIÓN ==========
+==================================================
+
+==================================================
+=================== PROYECTO 1 ===================
+ - Peso: 50.00%
+ - Requerimientos:
+   -> Backend: 2.0
+   -> Frontend: 1.0
+
+ - Equipo asignado:
+   -> Persona 0 (Backend): 50.0%
+   -> Persona 1 (Frontend): 25.0%
+   -> Persona 2 (Backend): 75.0%
+   -> Persona 3 (Frontend): 50.0%
+   -> Persona 4 (Backend): 75.0%
+   -> Persona 5 (Frontend): 25.0%
+
+ - Cálculo de Eficiencia (e_1):
+   • Suma de afinidades: 1.00
+   • Total requerimientos: 9.00
+   • Denominador: T^2 = 9.00
+   • e_1 = (1 + 1.00/9.00)/2 = 55.56%
+   • Contribución Global: 27.78%
+
+==================================================
+=================== PROYECTO 2 ===================
+ - Peso: 50.00%
+ - Requerimientos:
+   -> Backend: 1.0
+   -> Frontend: 2.0
+
+ - Equipo asignado:
+   -> Persona 0 (Backend): 50.0%
+   -> Persona 1 (Frontend): 75.0%
+   -> Persona 2 (Backend): 25.0%
+   -> Persona 3 (Frontend): 50.0%
+   -> Persona 4 (Backend): 25.0%
+   -> Persona 5 (Frontend): 75.0%
+
+ - Cálculo de Eficiencia (e_2):
+   • Suma de afinidades: 1.00
+   • Total requerimientos: 9.00
+   • Denominador: T^2 = 9.00
+   • e_2 = (1 + 1.00/9.00)/2 = 55.56%
+   • Contribución Global: 27.78%
+
+============ EFICIENCIA GLOBAL TOTAL: ============
+                      55.56%
+
+Tiempo de ejecución: 0.28 segundos

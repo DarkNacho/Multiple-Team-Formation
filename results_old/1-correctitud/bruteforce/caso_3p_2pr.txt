@@ -1,0 +1,28 @@
+------------------------------------------------------------
+Eficiencia Global Óptima (Fuerza Bruta): 1.0000
+------------------------------------------------------------
+
+PROYECTO 1 (Peso: 50.00%)
+  Requerimientos:
+    - Backend: 1.0
+    - Frontend: 1.0
+  Equipo Asignado y Contribuciones:
+    - Persona 0 (Backend): 1.00
+    - Persona 1 (Frontend): 1.00
+  Suministro total por habilidad para este proyecto:
+    - Backend: 1.00 (Requerido: 1.00)
+    - Frontend: 1.00 (Requerido: 1.00)
+  Eficiencia del Proyecto (e_1): 1.0000
+    (Numerador: 4.00, Denominador T_j^2: 4.00, T_j: 2.00)
+
+PROYECTO 2 (Peso: 50.00%)
+  Requerimientos:
+    - Backend: 1.0
+  Equipo Asignado y Contribuciones:
+    - Persona 2 (Backend): 1.00
+  Suministro total por habilidad para este proyecto:
+    - Backend: 1.00 (Requerido: 1.00)
+  Eficiencia del Proyecto (e_2): 1.0000
+    (Numerador: 1.00, Denominador T_j^2: 1.00, T_j: 1.00)
+============================================================
+Tiempo de ejecución: 0.02 segundos

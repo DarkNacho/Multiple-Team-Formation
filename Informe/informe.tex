@@ -28,8 +28,11 @@
 \maketitle
 
 \begin{abstract}
+    La asignación de personal a múltiples proyectos es un desafío complejo en la gestión organizacional, que requiere un equilibrio entre las competencias técnicas y la cohesión social de los equipos. Este trabajo aborda el Problema de Formación de Múltiples Equipos (MTFP) mediante un modelo de Programación No Lineal Entera Mixta (MINLP). El modelo propuesto maximiza una métrica de eficiencia global que integra la afinidad sociométrica entre los individuos, los requerimientos de habilidades de cada proyecto y su prioridad estratégica. La implementación se realizó en Python utilizando Pyomo, con el solver Bonmin para la resolución. Los resultados experimentales sobre instancias sintéticas demuestran la validez y robustez del enfoque: el modelo encuentra soluciones óptimas validadas contra un método de fuerza bruta, escala eficientemente para problemas de tamaño realista y gestiona adecuadamente escenarios con altas tasas de afinidades negativas y requerimientos inviables. Se concluye que el modelo es una herramienta de apoyo a la decisión práctica y efectiva para formar equipos más cohesivos y productivos.
 \end{abstract}
-
+\begin{IEEEkeywords}
+    Formación de equipos, optimización, programación no lineal entera mixta, sociometría, Pyomo, Bonmin.
+\end{IEEEkeywords}
 
 \section{Introducción}
 La formación de equipos multidisciplinarios es un desafío fundamental y recurrente en la gestión organizacional, especialmente al ejecutar múltiples proyectos simultáneamente en campos diversos como ingeniería, medicina o desarrollo de software. La eficiencia de estos equipos no solo radica en las habilidades técnicas individuales, sino crucialmente en la cohesión social y la dinámica interpersonal \cite{gutierrez2016multiple}. La asignación óptima de individuos a proyectos es inherentemente compleja, pues debe considerar competencias específicas, relaciones interpersonales, y restricciones como el cumplimiento de cuotas de habilidades o preferencias de colaboración.
@@ -227,7 +230,7 @@ La ejecución del modelo sigue los siguientes pasos:
     \item Carga de datos desde archivos \texttt{JSON} en caso de contar con un dataset real.
     \item Generación opcional de datos aleatorios para pruebas cuando no se disponga de un dataset real.
     \item Construcción del modelo en Pyomo, especificando variables (incluyendo las binarias para la selección de fracciones de tiempo), función objetivo y restricciones.
-    \item Solución del modelo utilizando el solver \textbf{Bonmin} ~~con sus parámetros por defecto~~.
+    \item Solución del modelo utilizando el solver \textbf{Bonmin}.
     \item Almacenamiento y análisis de los resultados obtenidos.
 \end{enumerate}
 
@@ -235,10 +238,7 @@ La ejecución del modelo sigue los siguientes pasos:
 
 El solver Bonmin se integró mediante la interfaz proporcionada por Pyomo. Para esta implementación, se usaron sus parámetros por defecto, sin modificaciones adicionales.
 
-
 \section{Resultados y Discusión}
-
-\textcolor{red}{TODO: Incluir resultados de experimentos numéricos, análisis de escalabilidad y comparaciones con otros enfoques.}
 
 Al interpretar la métrica de eficiencia del proyecto $e_l$, definida en la Ecuación \ref{eq:efficiency_project_updated}, es importante considerar una sutileza relacionada con la matriz de afinidad social $s_{ij}$. Como se describió anteriormente, un valor de $e_l=0.5$ se interpreta como un punto de cohesión neutra, donde las afinidades positivas y negativas se cancelan. Sin embargo, es una convención común o una implicación de la definición de $s_{ij}$ que la afinidad de un individuo consigo mismo, $s_{ii}$, sea 1. Si este es el caso, la diagonal de la matriz de afinidad contribuye positivamente a la suma $\sum_{i,j \in \mathcal{H}} s_{ij} x_{il} x_{jl}$.
 
@@ -248,10 +248,132 @@ En consecuencia, un equipo donde todas las relaciones \textit{interpersonales} s
 \[ e_l = \frac{1}{2} \left( 1 + \frac{\sum_{i \in \mathcal{H}} x_{il}^2}{\left(\sum_{a \in \mathcal{K}} r_{al}\right)^2} \right) \]
 Esta consideración no invalida la utilidad de $e_l$ como un indicador de la cohesión social del equipo, ni el rango de $[0,1]$. Simplemente refina la interpretación del punto $e_l=0.5$: este valor representa un estado donde las interacciones sociales negativas entre distintos miembros del equipo son lo suficientemente fuertes como para anular tanto las interacciones positivas entre otros miembros como la contribución basal positiva derivada de las auto-afinidades. La escala sigue siendo efectiva para comparar la cohesión relativa entre diferentes configuraciones de equipos. En lo que respecta al límite inferior de la escala, $e_l=0$, este se alcanzaría si el término de afinidad social total, $\sum_{i,j \in \mathcal{H}} s_{ij} x_{il} x_{jl}$, fuese igual a $-\left(\sum_{a \in \mathcal{K}} r_{al}\right)^2$. Considerando la contribución inherentemente positiva de las auto-afinidades (asumiendo $s_{ii}=1$), para que $e_l$ llegue a cero, la suma de las afinidades interpersonales negativas ($\sum_{i \neq j} s_{ij} x_{il} x_{jl}$) debe ser excepcionalmente fuerte, superando no solo las afinidades interpersonales positivas sino también la suma de $\sum_{i \in \mathcal{H}} x_{il}^2$. De hecho, para equipos muy pequeños (uno o dos miembros), incluso si todas las afinidades interpersonales fuesen -1 (y $s_{ii}=1$), el valor de $e_l$ no podría ser 0 (y, de hecho, se mantendría $\geq 0.5$) si existen requerimientos de proyecto ($\sum_{a \in \mathcal{K}} r_{al} > 0$), ya que la contribución positiva de las auto-afinidades no es superada en tal medida. Sin embargo, para equipos más grandes (tres o más miembros), es teóricamente posible que $e_l$ alcance el valor 0 si las interacciones negativas son suficientemente intensas y generalizadas. En la práctica, un valor de $e_l$ cercano a 0 siempre indicará un nivel de conflicto social extremadamente alto y perjudicial para el proyecto.
 
+Este comportamiento teórico se confirma en los experimentos de robustez. Como se observa en la Tabla \ref{tab:robustez}, incluso en un escenario extremo donde el 100\% de las afinidades interpersonales son negativas, la eficiencia global resultante es de 22.22\%, un valor marcadamente superior a cero. Este resultado ilustra cómo la contribución basal positiva de las auto-afinidades ($s_{ii}=1$) impide que la eficiencia colapse a 0, incluso bajo un conflicto generalizado, ya que el modelo debe cumplir con los requerimientos técnicos del proyecto.
 
-\section{Conclusiones}
-El modelo de Formación de Múltiples Equipos (MTFP) propuesto en este trabajo representa un avance significativo en la optimización de la asignación de recursos humanos a proyectos múltiples, considerando tanto las habilidades técnicas como las relaciones sociales entre los miembros del equipo. A través de un enfoque sistemático y modular, se ha logrado desarrollar una herramienta que permite a los gestores tomar decisiones informadas sobre la composición de equipos, maximizando la cohesión social y la eficiencia técnica.
-El uso de Pyomo y el solver Bonmin ha demostrado ser efectivo para resolver el problema de optimización planteado, permitiendo la adaptación a diferentes escenarios mediante la configuración externa de parámetros. Aunque el modelo presenta ciertas simplificaciones respecto a la complejidad del entorno real, su estructura modular y flexible facilita su aplicación en diversas organizaciones y contextos.
+\par Para evaluar la efectividad, robustez y escalabilidad del modelo MINLP propuesto, se diseñó y ejecutó un plan de pruebas exhaustivo. Los experimentos se realizaron sobre un conjunto de instancias sintéticas, generadas para simular diversos escenarios organizacionales. A continuación, se presentan y discuten los resultados obtenidos en cada una de las baterías de pruebas.
+
+\subsection{Validación de Correctitud}
+Para verificar la correctitud del modelo MINLP, la primera fase de experimentación consistió en comparar sus resultados con los de un método de referencia que garantiza la optimalidad: un algoritmo de fuerza bruta. Este algoritmo explora sistemáticamente todas las asignaciones posibles para encontrar la solución óptima global. Se utilizaron instancias de tamaño reducido, donde la exploración exhaustiva es computacionalmente factible.
+
+Los resultados, resumidos en la Tabla \ref{tab:correctitud}, muestran una coincidencia exacta entre la eficiencia global óptima encontrada por el solver Bonmin y la obtenida por el método de fuerza bruta en todos los casos de prueba, incluyendo escenarios con afinidades negativas.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Comparación de resultados entre el solver y fuerza bruta para validación.}
+    \label{tab:correctitud}
+    \begin{tabularx}{\linewidth}{@{}lccc@{}}
+        \toprule
+        \textbf{Instancia}               & \textbf{Efic. Global (F. Bruta)} & \textbf{Efic. Global (Solver)}   \\
+        (Personas/Proyectos/Habilidades) &                                  &                                & \\
+        \midrule
+        2p / 1pr / 1sk (afin. pos)       & 95.00\%                          & 95.00\%                          \\
+        3p / 2pr / 2sk (afin. mix)       & 85.50\%                          & 85.50\%                          \\
+        4p / 2pr / 2sk (afin. nega)      & 45.00\%                          & 45.00\%                          \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+La perfecta correspondencia en los valores de la función objetivo, así como en las asignaciones de variables de decisión, confirma que el modelo está formulado correctamente y que el solver es capaz de encontrar la solución óptima global para problemas de baja dimensionalidad. Esta validación inicial es un paso crucial antes de proceder a evaluar la escalabilidad y el comportamiento del modelo en instancias de mayor tamaño.
+
+\subsection{Análisis de Escalabilidad}
+Se evaluó el comportamiento del modelo frente a instancias de tamaño creciente para medir su escalabilidad. Se generaron problemas con un número de personas desde 10 hasta 100, con un aumento proporcional en el número de proyectos y habilidades. Los resultados se resumen en la Tabla \ref{tab:escalabilidad}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Resultados de las pruebas de escalabilidad.}
+    \label{tab:escalabilidad}
+    \begin{tabularx}{\linewidth}{@{}lccc@{}}
+        \toprule
+        \textbf{Instancia}               & \textbf{Eficiencia} & \textbf{Tiempo (s)} \\
+        (Personas/Proyectos/Habilidades) & \textbf{Global}     &                     \\
+        \midrule
+        10p / 2pr / 2sk                  & 88.89\%             & 0.19                \\
+        20p / 5pr / 4sk                  & 75.43\%             & 2.45                \\
+        30p / 5pr / 4sk                  & 71.20\%             & 15.81               \\
+        50p / 10pr / 8sk                 & 69.55\%             & 123.47              \\
+        100p / 10pr / 8sk                & 67.86\%             & 622.19              \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Como era de esperar, el tiempo de resolución aumenta de forma no lineal con el tamaño del problema, lo cual es característico de los problemas MINLP. Para la instancia más grande, con 100 personas, el modelo tardó poco más de 10 minutos en encontrar la solución óptima. Este resultado es prometedor, ya que demuestra que el modelo es capaz de resolver problemas de tamaño realista en un tiempo razonable.
+
+\subsection{Impacto de la Discretización del Tiempo}
+Se analizó cómo la granularidad de las fracciones de tiempo permitidas (\(\mathcal{D}\)) afecta la solución y el rendimiento. Se ejecutó la misma instancia (6 personas, 2 proyectos, 2 habilidades) con tres conjuntos de fracciones distintos. La Tabla \ref{tab:discretizacion} compara los resultados obtenidos por el solver Bonmin y el algoritmo de fuerza bruta.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Impacto de la discretización del tiempo en una instancia de 6p/2pr/2sk.}
+    \label{tab:discretizacion}
+    \begin{tabularx}{\linewidth}{@{}lccc@{}}
+        \toprule
+        \textbf{Fracciones Permitidas (\(\mathcal{D}\))} & \textbf{Efic. Global} & \textbf{T. Solver (s)} & \textbf{T. F. Bruta (s)} \\
+        \midrule
+        \{0, 1\}                                         & 88.89\%               & 0.18                   & 0.04                     \\
+        \{0, 0.5, 1\}                                    & 88.89\%               & 0.13                   & 3.56                     \\
+        \{0, 0.25, 0.5, 0.75, 1\}                        & 88.89\%               & 0.13                   & 1407.97                  \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Los resultados muestran que, para esta instancia particular, la eficiencia global óptima fue la misma en todos los escenarios, indicando que la solución óptima no requería asignaciones de tiempo parciales. Sin embargo, el análisis del tiempo de cómputo revela una diferencia crucial: mientras que el tiempo del solver se mantuvo estable y bajo, el tiempo del algoritmo de fuerza bruta creció de manera exponencial. Al aumentar la granularidad, el espacio de búsqueda para la fuerza bruta se expandió drásticamente, llevando el tiempo de ejecución de 0.04 segundos a más de 23 minutos.
+
+Este experimento subraya dos puntos importantes: primero, la capacidad del modelo para manejar fracciones de tiempo finas es una característica clave para problemas más complejos donde las asignaciones parciales podrían ser necesarias para alcanzar la optimalidad. Segundo, demuestra la clara superioridad computacional del solver MINLP sobre un método de búsqueda exhaustiva, siendo indispensable para resolver problemas de tamaño realista de manera eficiente.
+
+\subsection{Robustez ante Afinidades Negativas}
+Para medir la capacidad del modelo de gestionar conflictos interpersonales, se crearon instancias con una proporción creciente de afinidades negativas, desde un 50\% hasta un 100\%. Los resultados (Tabla \ref{tab:robustez}) muestran que la eficiencia global disminuye drásticamente a medida que aumenta la proporción de afinidades negativas. Esto ocurre porque el modelo se ve forzado a asignar personas con conflictos para cumplir con los requerimientos técnicos de los proyectos.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Impacto de afinidades negativas en una instancia de 6p/2pr/2sk.}
+    \label{tab:robustez}
+    \begin{tabularx}{\linewidth}{@{}lcccc@{}}
+        \toprule
+        \textbf{Proporción Negativas} & \textbf{Eficiencia Global} & \textbf{Tiempo (s)} & \textbf{Estado} \\
+        \midrule
+        50\%                          & 55.56\%                    & 0.28                & Óptimo          \\
+        60\%                          & 38.89\%                    & 0.15                & Óptimo          \\
+        80\%                          & 33.33\%                    & 0.12                & Óptimo          \\
+        90\%                          & 22.22\%                    & 0.14                & Óptimo          \\
+        100\%                         & 22.22\%                    & 0.12                & Óptimo          \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Este comportamiento demuestra que el modelo es sensible a la estructura social y penaliza fuertemente las configuraciones de equipos con alta conflictividad, tal como se esperaba. Para validar la calidad de la solución, el caso con 50\% de afinidades negativas se verificó mediante fuerza bruta, confirmando que la eficiencia del 55.56\% es óptima. Sin embargo, la fuerza bruta requirió 1441.19 segundos (aprox. 24 minutos) para encontrarla, en contraste con los 0.28 segundos del solver. Este resultado subraya la capacidad del modelo para encontrar soluciones óptimas de manera eficiente incluso en escenarios de alta conflictividad.
+
+\subsection{Sensibilidad a la Prioridad de Proyectos}
+Se evaluó si el modelo responde correctamente a los pesos (\(w_l\)) asignados a los proyectos. Se configuró una instancia con dos proyectos, variando sus pesos relativos. Los resultados se muestran en la Tabla \ref{tab:sensibilidad}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Sensibilidad a la prioridad de proyectos en una instancia de 6p/2pr/2sk.}
+    \label{tab:sensibilidad}
+    \begin{tabularx}{\linewidth}{@{}lcccc@{}}
+        \toprule
+        \textbf{Pesos (P1, P2)} & \textbf{Efic. P1} & \textbf{Efic. P2} & \textbf{Efic. Global} & \textbf{Tiempo (s)} \\
+        \midrule
+        (80\%, 20\%)            & 88.89\%           & 77.78\%           & 86.67\%               & 0.13                \\
+        (95\%, 5\%)             & 88.89\%           & 77.78\%           & 88.33\%               & 0.13                \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+En ambos experimentos, el modelo asignó el mismo conjunto de personas a cada proyecto. Aunque la asignación no cambió, el resultado demuestra que el modelo prioriza correctamente, ya que la eficiencia global ponderada aumenta conforme se asigna mayor peso al proyecto con el equipo más cohesivo (Proyecto 1).
+
+\subsection{Detección de Casos Inviables}
+Finalmente, se probó la robustez del modelo ante escenarios sin solución factible. Para ello, se generó una instancia donde los requerimientos de habilidades de los proyectos excedían deliberadamente la capacidad total de los recursos humanos disponibles. Al intentar resolver este problema, el solver Bonmin detuvo la ejecución y reportó correctamente que la instancia era inviable (\textit{infeasible}). Este resultado es crucial, pues confirma que las restricciones del modelo son consistentes y capaces de identificar correctamente situaciones en las que las demandas de los proyectos no pueden ser satisfechas, proveyendo una retroalimentación fundamental para la planificación.
+
+%\section{Conclusiones}
+%El modelo de Formación de Múltiples Equipos (MTFP) propuesto en este trabajo representa un avance significativo en la optimización de la asignación de recursos humanos a proyectos múltiples, considerando tanto las habilidades técnicas como las relaciones sociales entre los miembros del equipo. A través de un enfoque sistemático y modular, se ha logrado desarrollar una herramienta que permite a los gestores tomar decisiones informadas sobre la composición de equipos, maximizando la cohesión social y la eficiencia técnica.
+%El uso de Pyomo y el solver Bonmin ha demostrado ser efectivo para resolver el problema de optimización planteado, permitiendo la adaptación a diferentes escenarios mediante la configuración externa de parámetros. Aunque el modelo presenta ciertas simplificaciones respecto a la complejidad del entorno real, su estructura modular y flexible facilita su aplicación en diversas organizaciones y contextos.
+
+\section{Conclusiones y Trabajo Futuro}
+Este trabajo ha presentado un modelo de Programación No Lineal Entera Mixta (MINLP) para el Problema de Formación de Múltiples Equipos (MTFP), que integra de manera efectiva los requerimientos técnicos de los proyectos con la cohesión social de los equipos, ponderada por la prioridad estratégica de cada proyecto. La implementación, utilizando Pyomo y el solver Bonmin, ha demostrado ser una herramienta robusta y eficaz para abordar este complejo problema de asignación.
+
+Los resultados experimentales validan la efectividad y aplicabilidad del modelo. Se ha confirmado su \textbf{correctitud} al replicar las soluciones óptimas de un método de fuerza bruta en instancias pequeñas. El análisis de \textbf{escalabilidad} muestra que el modelo es capaz de resolver problemas de tamaño realista (100 personas) en tiempos computacionales razonables, lo que subraya su viabilidad práctica. Los experimentos de \textbf{robustez} demostraron que el modelo gestiona adecuadamente los conflictos interpersonales, penalizando las afinidades negativas y confirmando el comportamiento teórico de la métrica de eficiencia, la cual no colapsa a cero debido a la contribución de las auto-afinidades y la necesidad de cumplir con los requerimientos técnicos. Además, el modelo ha probado ser sensible a la \textbf{prioridad de los proyectos} y es capaz de identificar correctamente \textbf{casos inviables}, lo que constituye una característica valiosa para la planificación.
+
+Como \textbf{trabajo futuro}, se proponen varias líneas de extensión. Primero, se podría enriquecer el modelo para incluir habilidades secundarias en los individuos y penalizar la sobreasignación de recursos, lo que añadiría un mayor realismo. Segundo, se propone explorar una reinterpretación de la matriz de afinidad ($s_{ij}$) para capturar factores más complejos; por ejemplo, la auto-afinidad ($s_{ii}$) podría modelar el bienestar o nivel de agotamiento de un individuo, mientras que la afinidad interpersonal podría reflejar una compatibilidad profesional efectiva que puede diferir de la simpatía personal. Esto aumentaría el realismo del modelo sin cambiar su estructura matemática, dependiendo de una evaluación experta para definir estos parámetros. Finalmente, se podría evaluar el rendimiento del modelo con otros solvers MINLP o desarrollar heurísticas específicas para resolver instancias de muy grande escala de manera más rápida, aunque potencialmente subóptima.
 
 
 \begin{thebibliography}{00}

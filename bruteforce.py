@@ -235,7 +235,9 @@ class BruteForce_MTFP_Solver:
 
 if __name__ == "__main__":
     dataGen = DataGenerator()
-    data = dataGen.load_from_json("test_cases\complex3.json")
+    data = dataGen.load_from_json(
+        r"test_cases\4-afinidad_negativa\caso_6p_2pr_2sk_neg100.json"
+    )
     optimizer = BruteForce_MTFP_Solver(data)
 
     # Calcular el número total de combinaciones teóricas

@@ -1,0 +1,26 @@
+==================================================
+========= RESULTADOS DE LA OPTIMIZACIÓN ==========
+==================================================
+
+==================================================
+=================== PROYECTO 1 ===================
+ - Peso: 100.00%
+ - Requerimientos:
+   -> Backend: 1.0
+   -> Frontend: 1.0
+
+ - Equipo asignado:
+   -> Persona 0 (Backend): 100.0%
+   -> Persona 1 (Frontend): 100.0%
+
+ - Cálculo de Eficiencia (e_1):
+   • Suma de afinidades: 4.00
+   • Total requerimientos: 4.00
+   • Denominador: T^2 = 4.00
+   • e_1 = (1 + 4.00/4.00)/2 = 100.00%
+   • Contribución Global: 100.00%
+
+============ EFICIENCIA GLOBAL TOTAL: ============
+                     100.00%
+
+Tiempo de ejecución: 0.18 segundos

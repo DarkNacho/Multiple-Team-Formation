@@ -1,0 +1,310 @@
+==================================================
+========= RESULTADOS DE LA OPTIMIZACIÓN ==========
+==================================================
+
+==================================================
+=================== PROYECTO 1 ===================
+ - Peso: 5.09%
+ - Requerimientos:
+   -> Habilidad_6: 1.0
+   -> Habilidad_1: 4.5
+
+ - Equipo asignado:
+   -> Persona 1 (Habilidad_6): 100.0%
+   -> Persona 39 (Habilidad_1): 100.0%
+   -> Persona 40 (Habilidad_1): 100.0%
+   -> Persona 42 (Habilidad_1): 50.0%
+   -> Persona 62 (Habilidad_1): 100.0%
+   -> Persona 67 (Habilidad_1): 100.0%
+
+ - Cálculo de Eficiencia (e_1):
+   • Suma de afinidades: 11.25
+   • Total requerimientos: 30.25
+   • Denominador: T^2 = 30.25
+   • e_1 = (1 + 11.25/30.25)/2 = 68.60%
+   • Contribución Global: 3.49%
+
+==================================================
+=================== PROYECTO 2 ===================
+ - Peso: 3.71%
+ - Requerimientos:
+   -> Habilidad_7: 4.5
+   -> Habilidad_8: 5.0
+   -> Habilidad_4: 0.5
+   -> Habilidad_2: 6.5
+   -> Habilidad_6: 0.5
+
+ - Equipo asignado:
+   -> Persona 0 (Habilidad_2): 100.0%
+   -> Persona 2 (Habilidad_7): 50.0%
+   -> Persona 4 (Habilidad_6): 50.0%
+   -> Persona 6 (Habilidad_4): 50.0%
+   -> Persona 8 (Habilidad_8): 100.0%
+   -> Persona 11 (Habilidad_2): 100.0%
+   -> Persona 16 (Habilidad_7): 50.0%
+   -> Persona 17 (Habilidad_7): 50.0%
+   -> Persona 27 (Habilidad_8): 100.0%
+   -> Persona 32 (Habilidad_7): 100.0%
+   -> Persona 47 (Habilidad_2): 100.0%
+   -> Persona 48 (Habilidad_2): 100.0%
+   -> Persona 54 (Habilidad_2): 50.0%
+   -> Persona 63 (Habilidad_2): 100.0%
+   -> Persona 70 (Habilidad_8): 100.0%
+   -> Persona 76 (Habilidad_7): 100.0%
+   -> Persona 82 (Habilidad_8): 100.0%
+   -> Persona 87 (Habilidad_7): 100.0%
+   -> Persona 89 (Habilidad_8): 100.0%
+   -> Persona 91 (Habilidad_2): 100.0%
+
+ - Cálculo de Eficiencia (e_2):
+   • Suma de afinidades: -61.00
+   • Total requerimientos: 289.00
+   • Denominador: T^2 = 289.00
+   • e_2 = (1 + -61.00/289.00)/2 = 39.45%
+   • Contribución Global: 1.46%
+
+==================================================
+=================== PROYECTO 3 ===================
+ - Peso: 12.96%
+ - Requerimientos:
+   -> Habilidad_7: 0.5
+   -> Habilidad_8: 3.5
+   -> Habilidad_2: 0.5
+   -> Habilidad_5: 1.0
+
+ - Equipo asignado:
+   -> Persona 2 (Habilidad_7): 50.0%
+   -> Persona 22 (Habilidad_5): 100.0%
+   -> Persona 43 (Habilidad_8): 50.0%
+   -> Persona 54 (Habilidad_2): 50.0%
+   -> Persona 59 (Habilidad_8): 100.0%
+   -> Persona 64 (Habilidad_8): 100.0%
+   -> Persona 86 (Habilidad_8): 100.0%
+
+ - Cálculo de Eficiencia (e_3):
+   • Suma de afinidades: 15.75
+   • Total requerimientos: 30.25
+   • Denominador: T^2 = 30.25
+   • e_3 = (1 + 15.75/30.25)/2 = 76.03%
+   • Contribución Global: 9.86%
+
+==================================================
+=================== PROYECTO 4 ===================
+ - Peso: 14.24%
+ - Requerimientos:
+   -> Habilidad_8: 0.5
+   -> Habilidad_6: 0.5
+   -> Habilidad_4: 0.5
+
+ - Equipo asignado:
+   -> Persona 14 (Habilidad_4): 50.0%
+   -> Persona 33 (Habilidad_8): 50.0%
+   -> Persona 88 (Habilidad_6): 50.0%
+
+ - Cálculo de Eficiencia (e_4):
+   • Suma de afinidades: 1.50
+   • Total requerimientos: 2.25
+   • Denominador: T^2 = 2.25
+   • e_4 = (1 + 1.50/2.25)/2 = 83.33%
+   • Contribución Global: 11.87%
+
+==================================================
+=================== PROYECTO 5 ===================
+ - Peso: 6.66%
+ - Requerimientos:
+   -> Habilidad_7: 0.5
+   -> Habilidad_3: 5.5
+   -> Habilidad_6: 4.0
+   -> Habilidad_4: 0.5
+
+ - Equipo asignado:
+   -> Persona 12 (Habilidad_6): 100.0%
+   -> Persona 18 (Habilidad_6): 100.0%
+   -> Persona 30 (Habilidad_3): 100.0%
+   -> Persona 38 (Habilidad_6): 100.0%
+   -> Persona 45 (Habilidad_3): 100.0%
+   -> Persona 53 (Habilidad_3): 100.0%
+   -> Persona 56 (Habilidad_3): 100.0%
+   -> Persona 57 (Habilidad_3): 50.0%
+   -> Persona 58 (Habilidad_4): 50.0%
+   -> Persona 72 (Habilidad_3): 100.0%
+   -> Persona 78 (Habilidad_6): 50.0%
+   -> Persona 88 (Habilidad_6): 50.0%
+   -> Persona 98 (Habilidad_7): 50.0%
+
+ - Cálculo de Eficiencia (e_5):
+   • Suma de afinidades: 10.25
+   • Total requerimientos: 110.25
+   • Denominador: T^2 = 110.25
+   • e_5 = (1 + 10.25/110.25)/2 = 54.65%
+   • Contribución Global: 3.64%
+
+==================================================
+=================== PROYECTO 6 ===================
+ - Peso: 13.25%
+ - Requerimientos:
+   -> Habilidad_5: 3.0
+   -> Habilidad_1: 0.5
+   -> Habilidad_7: 3.5
+   -> Habilidad_8: 2.0
+   -> Habilidad_2: 3.5
+   -> Habilidad_6: 0.5
+
+ - Equipo asignado:
+   -> Persona 5 (Habilidad_8): 100.0%
+   -> Persona 13 (Habilidad_1): 50.0%
+   -> Persona 16 (Habilidad_7): 50.0%
+   -> Persona 19 (Habilidad_8): 100.0%
+   -> Persona 28 (Habilidad_2): 100.0%
+   -> Persona 34 (Habilidad_5): 50.0%
+   -> Persona 36 (Habilidad_7): 100.0%
+   -> Persona 44 (Habilidad_7): 100.0%
+   -> Persona 49 (Habilidad_7): 100.0%
+   -> Persona 52 (Habilidad_5): 50.0%
+   -> Persona 60 (Habilidad_2): 100.0%
+   -> Persona 68 (Habilidad_2): 100.0%
+   -> Persona 71 (Habilidad_2): 50.0%
+   -> Persona 78 (Habilidad_6): 50.0%
+   -> Persona 79 (Habilidad_5): 100.0%
+   -> Persona 92 (Habilidad_5): 100.0%
+
+ - Cálculo de Eficiencia (e_6):
+   • Suma de afinidades: 32.00
+   • Total requerimientos: 169.00
+   • Denominador: T^2 = 169.00
+   • e_6 = (1 + 32.00/169.00)/2 = 59.47%
+   • Contribución Global: 7.88%
+
+==================================================
+=================== PROYECTO 7 ===================
+ - Peso: 14.17%
+ - Requerimientos:
+   -> Habilidad_6: 0.5
+   -> Habilidad_5: 10.5
+   -> Habilidad_4: 4.0
+   -> Habilidad_1: 5.5
+
+ - Equipo asignado:
+   -> Persona 4 (Habilidad_6): 50.0%
+   -> Persona 10 (Habilidad_5): 100.0%
+   -> Persona 14 (Habilidad_4): 50.0%
+   -> Persona 15 (Habilidad_1): 100.0%
+   -> Persona 20 (Habilidad_5): 100.0%
+   -> Persona 21 (Habilidad_5): 100.0%
+   -> Persona 23 (Habilidad_4): 100.0%
+   -> Persona 24 (Habilidad_1): 100.0%
+   -> Persona 25 (Habilidad_5): 100.0%
+   -> Persona 37 (Habilidad_5): 100.0%
+   -> Persona 41 (Habilidad_4): 50.0%
+   -> Persona 42 (Habilidad_1): 50.0%
+   -> Persona 51 (Habilidad_5): 100.0%
+   -> Persona 52 (Habilidad_5): 50.0%
+   -> Persona 61 (Habilidad_1): 100.0%
+   -> Persona 65 (Habilidad_1): 100.0%
+   -> Persona 74 (Habilidad_5): 100.0%
+   -> Persona 81 (Habilidad_5): 100.0%
+   -> Persona 83 (Habilidad_1): 100.0%
+   -> Persona 85 (Habilidad_4): 100.0%
+   -> Persona 94 (Habilidad_5): 100.0%
+   -> Persona 95 (Habilidad_4): 100.0%
+   -> Persona 96 (Habilidad_5): 100.0%
+
+ - Cálculo de Eficiencia (e_7):
+   • Suma de afinidades: -27.50
+   • Total requerimientos: 420.25
+   • Denominador: T^2 = 420.25
+   • e_7 = (1 + -27.50/420.25)/2 = 46.73%
+   • Contribución Global: 6.62%
+
+==================================================
+=================== PROYECTO 8 ===================
+ - Peso: 12.15%
+ - Requerimientos:
+   -> Habilidad_7: 3.5
+   -> Habilidad_8: 0.5
+   -> Habilidad_4: 2.5
+   -> Habilidad_1: 3.0
+
+ - Equipo asignado:
+   -> Persona 7 (Habilidad_7): 100.0%
+   -> Persona 9 (Habilidad_1): 100.0%
+   -> Persona 13 (Habilidad_1): 50.0%
+   -> Persona 17 (Habilidad_7): 50.0%
+   -> Persona 33 (Habilidad_8): 50.0%
+   -> Persona 35 (Habilidad_1): 50.0%
+   -> Persona 50 (Habilidad_1): 100.0%
+   -> Persona 58 (Habilidad_4): 50.0%
+   -> Persona 66 (Habilidad_4): 100.0%
+   -> Persona 75 (Habilidad_7): 100.0%
+   -> Persona 77 (Habilidad_7): 100.0%
+   -> Persona 90 (Habilidad_4): 100.0%
+
+ - Cálculo de Eficiencia (e_8):
+   • Suma de afinidades: 30.00
+   • Total requerimientos: 90.25
+   • Denominador: T^2 = 90.25
+   • e_8 = (1 + 30.00/90.25)/2 = 66.62%
+   • Contribución Global: 8.09%
+
+==================================================
+=================== PROYECTO 9 ===================
+ - Peso: 11.97%
+ - Requerimientos:
+   -> Habilidad_4: 0.5
+   -> Habilidad_1: 1.0
+
+ - Equipo asignado:
+   -> Persona 6 (Habilidad_4): 50.0%
+   -> Persona 55 (Habilidad_1): 100.0%
+
+ - Cálculo de Eficiencia (e_9):
+   • Suma de afinidades: 2.25
+   • Total requerimientos: 2.25
+   • Denominador: T^2 = 2.25
+   • e_9 = (1 + 2.25/2.25)/2 = 100.00%
+   • Contribución Global: 11.97%
+
+==================================================
+================== PROYECTO 10 ===================
+ - Peso: 5.80%
+ - Requerimientos:
+   -> Habilidad_5: 2.5
+   -> Habilidad_1: 0.5
+   -> Habilidad_3: 8.5
+   -> Habilidad_7: 0.5
+   -> Habilidad_8: 0.5
+   -> Habilidad_4: 1.5
+   -> Habilidad_2: 1.5
+
+ - Equipo asignado:
+   -> Persona 3 (Habilidad_3): 100.0%
+   -> Persona 26 (Habilidad_3): 100.0%
+   -> Persona 29 (Habilidad_4): 100.0%
+   -> Persona 31 (Habilidad_3): 100.0%
+   -> Persona 34 (Habilidad_5): 50.0%
+   -> Persona 35 (Habilidad_1): 50.0%
+   -> Persona 41 (Habilidad_4): 50.0%
+   -> Persona 43 (Habilidad_8): 50.0%
+   -> Persona 46 (Habilidad_5): 100.0%
+   -> Persona 57 (Habilidad_3): 50.0%
+   -> Persona 69 (Habilidad_3): 100.0%
+   -> Persona 71 (Habilidad_2): 50.0%
+   -> Persona 73 (Habilidad_3): 100.0%
+   -> Persona 80 (Habilidad_3): 100.0%
+   -> Persona 84 (Habilidad_5): 100.0%
+   -> Persona 93 (Habilidad_3): 100.0%
+   -> Persona 97 (Habilidad_2): 100.0%
+   -> Persona 98 (Habilidad_7): 50.0%
+   -> Persona 99 (Habilidad_3): 100.0%
+
+ - Cálculo de Eficiencia (e_10):
+   • Suma de afinidades: 7.00
+   • Total requerimientos: 240.25
+   • Denominador: T^2 = 240.25
+   • e_10 = (1 + 7.00/240.25)/2 = 51.46%
+   • Contribución Global: 2.98%
+
+============ EFICIENCIA GLOBAL TOTAL: ============
+                      67.86%
+
+Tiempo de ejecución: 622.19 segundos

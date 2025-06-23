@@ -1,0 +1,113 @@
+==================================================
+========= RESULTADOS DE LA OPTIMIZACIÓN ==========
+==================================================
+
+==================================================
+=================== PROYECTO 1 ===================
+ - Peso: 26.14%
+ - Requerimientos:
+   -> Habilidad_2: 1.0
+   -> Habilidad_4: 1.0
+
+ - Equipo asignado:
+   -> Persona 9 (Habilidad_2): 100.0%
+   -> Persona 12 (Habilidad_4): 100.0%
+
+ - Cálculo de Eficiencia (e_1):
+   • Suma de afinidades: 2.00
+   • Total requerimientos: 4.00
+   • Denominador: T^2 = 4.00
+   • e_1 = (1 + 2.00/4.00)/2 = 75.00%
+   • Contribución Global: 19.60%
+
+==================================================
+=================== PROYECTO 2 ===================
+ - Peso: 28.49%
+ - Requerimientos:
+   -> Habilidad_1: 0.5
+
+ - Equipo asignado:
+   -> Persona 16 (Habilidad_1): 50.0%
+
+ - Cálculo de Eficiencia (e_2):
+   • Suma de afinidades: 0.25
+   • Total requerimientos: 0.25
+   • Denominador: T^2 = 0.25
+   • e_2 = (1 + 0.25/0.25)/2 = 100.00%
+   • Contribución Global: 28.49%
+
+==================================================
+=================== PROYECTO 3 ===================
+ - Peso: 18.04%
+ - Requerimientos:
+   -> Habilidad_2: 4.5
+   -> Habilidad_1: 4.0
+
+ - Equipo asignado:
+   -> Persona 1 (Habilidad_1): 100.0%
+   -> Persona 3 (Habilidad_2): 100.0%
+   -> Persona 4 (Habilidad_2): 100.0%
+   -> Persona 7 (Habilidad_2): 50.0%
+   -> Persona 8 (Habilidad_1): 100.0%
+   -> Persona 10 (Habilidad_1): 100.0%
+   -> Persona 13 (Habilidad_2): 100.0%
+   -> Persona 15 (Habilidad_2): 100.0%
+   -> Persona 18 (Habilidad_1): 100.0%
+
+ - Cálculo de Eficiencia (e_3):
+   • Suma de afinidades: -4.75
+   • Total requerimientos: 72.25
+   • Denominador: T^2 = 72.25
+   • e_3 = (1 + -4.75/72.25)/2 = 46.71%
+   • Contribución Global: 8.42%
+
+==================================================
+=================== PROYECTO 4 ===================
+ - Peso: 17.34%
+ - Requerimientos:
+   -> Habilidad_3: 2.5
+   -> Habilidad_4: 0.5
+   -> Habilidad_1: 0.5
+
+ - Equipo asignado:
+   -> Persona 0 (Habilidad_3): 100.0%
+   -> Persona 5 (Habilidad_3): 100.0%
+   -> Persona 14 (Habilidad_3): 50.0%
+   -> Persona 16 (Habilidad_1): 50.0%
+   -> Persona 19 (Habilidad_4): 50.0%
+
+ - Cálculo de Eficiencia (e_4):
+   • Suma de afinidades: 6.00
+   • Total requerimientos: 12.25
+   • Denominador: T^2 = 12.25
+   • e_4 = (1 + 6.00/12.25)/2 = 74.49%
+   • Contribución Global: 12.91%
+
+==================================================
+=================== PROYECTO 5 ===================
+ - Peso: 10.00%
+ - Requerimientos:
+   -> Habilidad_2: 0.5
+   -> Habilidad_3: 2.5
+   -> Habilidad_4: 0.5
+   -> Habilidad_1: 1.0
+
+ - Equipo asignado:
+   -> Persona 2 (Habilidad_3): 100.0%
+   -> Persona 6 (Habilidad_1): 100.0%
+   -> Persona 7 (Habilidad_2): 50.0%
+   -> Persona 11 (Habilidad_3): 50.0%
+   -> Persona 17 (Habilidad_3): 100.0%
+   -> Persona 19 (Habilidad_4): 50.0%
+
+ - Cálculo de Eficiencia (e_5):
+   • Suma de afinidades: 2.75
+   • Total requerimientos: 20.25
+   • Denominador: T^2 = 20.25
+   • e_5 = (1 + 2.75/20.25)/2 = 56.79%
+   • Contribución Global: 5.68%
+
+============ EFICIENCIA GLOBAL TOTAL: ============
+                      75.11%
+
+Tiempo de ejecución: 0.84 segundos

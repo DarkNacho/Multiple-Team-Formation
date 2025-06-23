@@ -1,0 +1,42 @@
+==================================================
+========= RESULTADOS DE LA OPTIMIZACIÓN ==========
+==================================================
+
+==================================================
+=================== PROYECTO 1 ===================
+ - Peso: 70.38%
+ - Requerimientos:
+   -> Habilidad_1: 1.0
+
+ - Equipo asignado:
+   -> Persona 5 (Habilidad_1): 100.0%
+
+ - Cálculo de Eficiencia (e_1):
+   • Suma de afinidades: 1.00
+   • Total requerimientos: 1.00
+   • Denominador: T^2 = 1.00
+   • e_1 = (1 + 1.00/1.00)/2 = 100.00%
+   • Contribución Global: 70.38%
+
+==================================================
+=================== PROYECTO 2 ===================
+ - Peso: 29.62%
+ - Requerimientos:
+   -> Habilidad_1: 3.0
+
+ - Equipo asignado:
+   -> Persona 0 (Habilidad_1): 100.0%
+   -> Persona 4 (Habilidad_1): 100.0%
+   -> Persona 7 (Habilidad_1): 100.0%
+
+ - Cálculo de Eficiencia (e_2):
+   • Suma de afinidades: -2.00
+   • Total requerimientos: 9.00
+   • Denominador: T^2 = 9.00
+   • e_2 = (1 + -2.00/9.00)/2 = 38.89%
+   • Contribución Global: 11.52%
+
+============ EFICIENCIA GLOBAL TOTAL: ============
+                      81.90%
+
+Tiempo de ejecución: 0.22 segundos
