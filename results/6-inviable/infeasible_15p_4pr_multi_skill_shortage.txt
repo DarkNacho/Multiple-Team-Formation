@@ -1,0 +1,104 @@
+==================================================
+==== RESULTADOS DE LA OPTIMIZACIÓN (RELAJADA) ====
+==================================================
+
+==================================================
+=================== PROYECTO 1 ===================
+ - Peso: 30.00%
+
+ - Estado de Requerimientos:
+   -> DevOps: Req=1.50, Prov=1.00 -> FALTANTE: 0.50
+   -> QA: Req=2.00, Prov=2.00 -> CUMPLIDO
+   -> Backend: Req=2.00, Prov=1.00 -> FALTANTE: 1.00
+
+ - Equipo asignado:
+   -> Persona 0 (DevOps): 75.0%
+   -> Persona 1 (DevOps): 25.0%
+   -> Persona 4 (QA): 100.0%
+   -> Persona 5 (QA): 50.0%
+   -> Persona 6 (QA): 50.0%
+   -> Persona 11 (Backend): 25.0%
+   -> Persona 12 (Backend): 25.0%
+   -> Persona 13 (Backend): 25.0%
+   -> Persona 14 (Backend): 25.0%
+
+ - Cálculo de Eficiencia (e_1):
+   • Suma de afinidades: 6.00
+   • Denominador: T^2 = 30.25
+   • e_1 = (1 + 6.00/30.25)/2 = 59.92%
+   • Contribución Global: 17.98%
+
+==================================================
+=================== PROYECTO 2 ===================
+ - Peso: 25.00%
+
+ - Estado de Requerimientos:
+   -> DataScience: Req=2.50, Prov=2.00 -> FALTANTE: 0.50
+   -> QA: Req=1.00, Prov=1.00 -> CUMPLIDO
+
+ - Equipo asignado:
+   -> Persona 2 (DataScience): 100.0%
+   -> Persona 3 (DataScience): 100.0%
+   -> Persona 5 (QA): 25.0%
+   -> Persona 6 (QA): 25.0%
+   -> Persona 7 (QA): 50.0%
+
+ - Cálculo de Eficiencia (e_2):
+   • Suma de afinidades: 5.00
+   • Denominador: T^2 = 12.25
+   • e_2 = (1 + 5.00/12.25)/2 = 70.41%
+   • Contribución Global: 17.60%
+
+==================================================
+=================== PROYECTO 3 ===================
+ - Peso: 25.00%
+
+ - Estado de Requerimientos:
+   -> UI/UX: Req=2.00, Prov=2.00 -> CUMPLIDO
+   -> Backend: Req=3.00, Prov=3.00 -> CUMPLIDO
+   -> ¡Todos los requerimientos para este proyecto fueron cumplidos!
+
+ - Equipo asignado:
+   -> Persona 8 (UI/UX): 75.0%
+   -> Persona 9 (UI/UX): 25.0%
+   -> Persona 10 (UI/UX): 100.0%
+   -> Persona 11 (Backend): 75.0%
+   -> Persona 12 (Backend): 75.0%
+   -> Persona 13 (Backend): 75.0%
+   -> Persona 14 (Backend): 75.0%
+
+ - Cálculo de Eficiencia (e_3):
+   • Suma de afinidades: 13.00
+   • Denominador: T^2 = 25.00
+   • e_3 = (1 + 13.00/25.00)/2 = 76.00%
+   • Contribución Global: 19.00%
+
+==================================================
+=================== PROYECTO 4 ===================
+ - Peso: 20.00%
+
+ - Estado de Requerimientos:
+   -> DevOps: Req=1.00, Prov=1.00 -> CUMPLIDO
+   -> DataScience: Req=1.00, Prov=0.00 -> FALTANTE: 1.00
+   -> QA: Req=1.00, Prov=1.00 -> CUMPLIDO
+
+ - Equipo asignado:
+   -> Persona 0 (DevOps): 25.0%
+   -> Persona 1 (DevOps): 75.0%
+   -> Persona 5 (QA): 25.0%
+   -> Persona 6 (QA): 25.0%
+   -> Persona 7 (QA): 50.0%
+
+ - Cálculo de Eficiencia (e_4):
+   • Suma de afinidades: 2.00
+   • Denominador: T^2 = 9.00
+   • e_4 = (1 + 2.00/9.00)/2 = 61.11%
+   • Contribución Global: 12.22%
+
+============ EFICIENCIA GLOBAL TOTAL: ============
+                      66.80%
+
+========= DÉFICIT TOTAL DE HABILIDADES: ==========
+                       3.00
+
+Tiempo de ejecución: 16.23 segundos

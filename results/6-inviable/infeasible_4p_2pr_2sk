@@ -1,0 +1,47 @@
+==================================================
+==== RESULTADOS DE LA OPTIMIZACIÓN (RELAJADA) ====
+==================================================
+
+==================================================
+=================== PROYECTO 1 ===================
+ - Peso: 60.00%
+
+ - Estado de Requerimientos:
+   -> Backend: Req=2.50, Prov=1.00 -> FALTANTE: 1.50
+   -> Frontend: Req=1.50, Prov=1.00 -> FALTANTE: 0.50
+
+ - Equipo asignado:
+   -> Persona 1 (Backend): 100.0%
+   -> Persona 2 (Frontend): 100.0%
+
+ - Cálculo de Eficiencia (e_1):
+   • Suma de afinidades: 4.00
+   • Denominador: T^2 = 16.00
+   • e_1 = (1 + 4.00/16.00)/2 = 62.50%
+   • Contribución Global: 37.50%
+
+==================================================
+=================== PROYECTO 2 ===================
+ - Peso: 40.00%
+
+ - Estado de Requerimientos:
+   -> Backend: Req=1.00, Prov=1.00 -> CUMPLIDO
+   -> Frontend: Req=2.00, Prov=1.00 -> FALTANTE: 1.00
+
+ - Equipo asignado:
+   -> Persona 0 (Backend): 100.0%
+   -> Persona 3 (Frontend): 100.0%
+
+ - Cálculo de Eficiencia (e_2):
+   • Suma de afinidades: 4.00
+   • Denominador: T^2 = 9.00
+   • e_2 = (1 + 4.00/9.00)/2 = 72.22%
+   • Contribución Global: 28.89%
+
+============ EFICIENCIA GLOBAL TOTAL: ============
+                      66.39%
+
+========= DÉFICIT TOTAL DE HABILIDADES: ==========
+                       3.00
+
+Tiempo de ejecución: 0.12 segundos

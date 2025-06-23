@@ -28,8 +28,10 @@
 \maketitle
 
 \begin{abstract}
-    La asignación de personal a múltiples proyectos es un desafío complejo en la gestión organizacional, que requiere un equilibrio entre las competencias técnicas y la cohesión social de los equipos. Este trabajo aborda el Problema de Formación de Múltiples Equipos (MTFP) mediante un modelo de Programación No Lineal Entera Mixta (MINLP). El modelo propuesto maximiza una métrica de eficiencia global que integra la afinidad sociométrica entre los individuos, los requerimientos de habilidades de cada proyecto y su prioridad estratégica. La implementación se realizó en Python utilizando Pyomo, con el solver Bonmin para la resolución. Los resultados experimentales sobre instancias sintéticas demuestran la validez y robustez del enfoque: el modelo encuentra soluciones óptimas validadas contra un método de fuerza bruta, escala eficientemente para problemas de tamaño realista y gestiona adecuadamente escenarios con altas tasas de afinidades negativas y requerimientos inviables. Se concluye que el modelo es una herramienta de apoyo a la decisión práctica y efectiva para formar equipos más cohesivos y productivos.
+    %La asignación de personal a múltiples proyectos es un desafío complejo en la gestión organizacional, que requiere un equilibrio entre las competencias técnicas y la cohesión social de los equipos. Este trabajo aborda el Problema de Formación de Múltiples Equipos (MTFP) mediante un modelo de Programación No Lineal Entera Mixta (MINLP). El modelo propuesto maximiza una métrica de eficiencia global que integra la afinidad sociométrica entre los individuos, los requerimientos de habilidades de cada proyecto y su prioridad estratégica. La implementación se realizó en Python utilizando Pyomo, con el solver Bonmin para la resolución. Los resultados experimentales sobre instancias sintéticas demuestran la validez y robustez del enfoque: el modelo encuentra soluciones óptimas validadas contra un método de fuerza bruta, escala eficientemente para problemas de tamaño realista y gestiona adecuadamente escenarios con altas tasas de afinidades negativas y requerimientos inviables. Se concluye que el modelo es una herramienta de apoyo a la decisión práctica y efectiva para formar equipos más cohesivos y productivos.
+    La asignación de personal a múltiples proyectos es un desafío complejo en la gestión organizacional, que requiere un equilibrio entre las competencias técnicas y la cohesión social de los equipos. Este trabajo aborda el Problema de Formación de Múltiples Equipos (MTFP) mediante un modelo de Programación No Lineal Entera Mixta (MINLP). El modelo propuesto maximiza una métrica de eficiencia global que integra la afinidad sociométrica entre los individuos, los requerimientos de habilidades de cada proyecto y su prioridad estratégica. La implementación se realizó en Python utilizando Pyomo, con el solver Bonmin para la resolución. Los resultados experimentales sobre instancias sintéticas demuestran la validez y robustez del enfoque: el modelo encuentra soluciones óptimas validadas contra un método de fuerza bruta, escala eficientemente para problemas de tamaño realista y gestiona requerimientos inviables mediante un enfoque de relajación que identifica y cuantifica los déficits de habilidades, ofreciendo soluciones parciales accionables. Se concluye que el modelo es una herramienta de apoyo a la decisión práctica y efectiva para formar equipos más cohesivos y productivos.
 \end{abstract}
+
 \begin{IEEEkeywords}
     Formación de equipos, optimización, programación no lineal entera mixta, sociometría, Pyomo, Bonmin.
 \end{IEEEkeywords}
@@ -52,7 +54,8 @@ El enfoque propuesto para abordar el problema de formación de equipos multiples
 
     \item \textbf{Implementación computacional:} Se emplea Pyomo\cite{pyomo_hart2011}, un lenguaje de modelado algebraico en Python, para construir el modelo de optimización. La solución se obtiene mediante el solver Bonmin\cite{bonmin_bonami2008}, capaz de manejar problemas de optimización no lineal entera mixta, lo cual es necesario debido a la inclusión de asignaciones de tiempo fraccionarias y discretas. El sistema permite configurar el modelo mediante archivos externos, lo que facilita la adaptación a diferentes tamaños y características del problema sin necesidad de modificar la estructura del código.
 
-    \item \textbf{Resolución y análisis:} Se realizan experimentos numéricos sobre diversas instancias para evaluar la efectividad y escalabilidad del enfoque. Los resultados se analizan desde el punto de vista de la maximización de la afinidad social, la factibilidad de las soluciones y el comportamiento computacional, permitiendo identificar fortalezas y áreas de mejora del modelo.
+          %\item \textbf{Resolución y análisis:} Se realizan experimentos numéricos sobre diversas instancias para evaluar la efectividad y escalabilidad del enfoque. Los resultados se analizan desde el punto de vista de la maximización de la afinidad social, la factibilidad de las soluciones y el comportamiento computacional, permitiendo identificar fortalezas y áreas de mejora del modelo.
+    \item \textbf{Resolución y análisis:} Se realizan experimentos numéricos sobre diversas instancias para evaluar la efectividad y escalabilidad del enfoque. Los resultados se analizan desde el punto de vista de la maximización de la afinidad social y la factibilidad de las soluciones. Se incluye un procedimiento de relajación para gestionar casos inviables, permitiendo identificar fortalezas y áreas de mejora del modelo.
 \end{enumerate}
 
 
@@ -266,9 +269,9 @@ Los resultados, resumidos en la Tabla \ref{tab:correctitud}, muestran una coinci
         \textbf{Instancia}               & \textbf{Efic. Global (F. Bruta)} & \textbf{Efic. Global (Solver)}   \\
         (Personas/Proyectos/Habilidades) &                                  &                                & \\
         \midrule
-        2p / 1pr / 1sk (afin. pos)       & 95.00\%                          & 95.00\%                          \\
-        3p / 2pr / 2sk (afin. mix)       & 85.50\%                          & 85.50\%                          \\
-        4p / 2pr / 2sk (afin. nega)      & 45.00\%                          & 45.00\%                          \\
+        2p / 1pr / 1sk (afin. pos)       & 100.00\%                         & 100.00\%                         \\
+        3p / 2pr / 2sk (afin. mix)       & 100.00\%                         & 100.00\%                         \\
+        4p / 2pr / 2sk (afin. nega)      & 75.00\%                          & 75.00\%                          \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -287,10 +290,10 @@ Se evaluó el comportamiento del modelo frente a instancias de tamaño creciente
         \textbf{Instancia}               & \textbf{Eficiencia} & \textbf{Tiempo (s)} \\
         (Personas/Proyectos/Habilidades) & \textbf{Global}     &                     \\
         \midrule
-        10p / 2pr / 2sk                  & 88.89\%             & 0.19                \\
-        20p / 5pr / 4sk                  & 75.43\%             & 2.45                \\
-        30p / 5pr / 4sk                  & 71.20\%             & 15.81               \\
-        50p / 10pr / 8sk                 & 69.55\%             & 123.47              \\
+        10p / 2pr / 2sk                  & 81.90\%             & 0.22                \\
+        20p / 5pr / 4sk                  & 75.11\%             & 0.84                \\
+        30p / 5pr / 4sk                  & 60.22\%             & 5.05                \\
+        50p / 10pr / 8sk                 & 73.65\%             & 45.11               \\
         100p / 10pr / 8sk                & 67.86\%             & 622.19              \\
         \bottomrule
     \end{tabularx}
@@ -361,8 +364,31 @@ Se evaluó si el modelo responde correctamente a los pesos (\(w_l\)) asignados a
 
 En ambos experimentos, el modelo asignó el mismo conjunto de personas a cada proyecto. Aunque la asignación no cambió, el resultado demuestra que el modelo prioriza correctamente, ya que la eficiencia global ponderada aumenta conforme se asigna mayor peso al proyecto con el equipo más cohesivo (Proyecto 1).
 
-\subsection{Detección de Casos Inviables}
-Finalmente, se probó la robustez del modelo ante escenarios sin solución factible. Para ello, se generó una instancia donde los requerimientos de habilidades de los proyectos excedían deliberadamente la capacidad total de los recursos humanos disponibles. Al intentar resolver este problema, el solver Bonmin detuvo la ejecución y reportó correctamente que la instancia era inviable (\textit{infeasible}). Este resultado es crucial, pues confirma que las restricciones del modelo son consistentes y capaces de identificar correctamente situaciones en las que las demandas de los proyectos no pueden ser satisfechas, proveyendo una retroalimentación fundamental para la planificación.
+\subsection{Gestión de Casos Inviables y Relajación del Modelo}
+Finalmente, se probó la robustez del modelo ante escenarios sin solución factible. Para ello, se implementó un enfoque de dos etapas. Primero, se intenta resolver el modelo estricto. Si el solver reporta que la instancia es inviable (\textit{infeasible}), se activa un segundo modelo relajado.
+
+Este modelo relajado introduce variables de holgura (déficit) en la restricción de requerimientos de habilidad (Ecuación \ref{eq:constraint_skills_updated}), permitiendo que no se cumplan por completo. Para asegurar que el modelo aún intente satisfacer la mayor cantidad de requerimientos posible, se modifica la función objetivo (Ecuación \ref{eq:objective_total_updated}) para incluir una fuerte penalización proporcional a la suma de todos los déficits.
+
+Este mecanismo no solo evita un fallo total, sino que proporciona información de gran valor para la gestión: la solución del modelo relajado muestra la mejor asignación parcial posible y cuantifica con precisión qué habilidades faltan en cada proyecto y en qué cantidad. Esto permite a los gestores tomar decisiones informadas, como contratar nuevo personal con habilidades específicas o renegociar el alcance de un proyecto.
+
+Los resultados de las pruebas sobre instancias inviables (Tabla \ref{tab:infeasible}) confirman la efectividad de este enfoque. El modelo estricto identifica correctamente la inviabilidad, y el modelo relajado procede a encontrar una solución óptima parcial. La tabla detalla la eficiencia global alcanzada a pesar de la inviabilidad y el \textbf{déficit total}, que representa la suma de todas las unidades de habilidad (medidas en personas-equivalente) que no pudieron ser asignadas para cumplir con los requerimientos originales de los proyectos.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Resultados del modelo relajado sobre instancias inviables.}
+    \label{tab:infeasible}
+    \begin{tabularx}{\linewidth}{@{}lrrr@{}}
+        \toprule
+        \textbf{Instancia}               & \textbf{Efic. Global} & \textbf{Déficit Total} & \textbf{Tiempo (s)} \\
+        (Personas/Proyectos/Habilidades) &                       &                        &                     \\
+        \midrule
+        4p / 2pr / 2sk                   & 66.39\%               & 3.0                    & 0.12                \\
+        6p / 2pr / 2sk                   & 54.32\%               & 12.0                   & 0.10                \\
+        10p / 3pr / 2sk                  & 79.93\%               & 1.5                    & 0.25                \\
+        15p / 4pr / 5sk                  & 66.80\%               & 3.0                    & 16.23               \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
 %\section{Conclusiones}
 %El modelo de Formación de Múltiples Equipos (MTFP) propuesto en este trabajo representa un avance significativo en la optimización de la asignación de recursos humanos a proyectos múltiples, considerando tanto las habilidades técnicas como las relaciones sociales entre los miembros del equipo. A través de un enfoque sistemático y modular, se ha logrado desarrollar una herramienta que permite a los gestores tomar decisiones informadas sobre la composición de equipos, maximizando la cohesión social y la eficiencia técnica.

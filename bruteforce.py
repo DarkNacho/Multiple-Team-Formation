@@ -4,7 +4,10 @@ from typing import Optional
 
 import numpy as np
 
-from onefile import DataGenerator, InstanceData  # Necesario para la fuerza bruta
+from onefile import (
+    DataGenerator,
+    InstanceData,
+)  # Necesario para la fuerza bruta
 
 
 # =============================================
@@ -235,9 +238,10 @@ class BruteForce_MTFP_Solver:
 
 if __name__ == "__main__":
     dataGen = DataGenerator()
-    data = dataGen.load_from_json(
-        r"test_cases\4-afinidad_negativa\caso_6p_2pr_2sk_neg100.json"
+    data = DataGenerator.load_from_json(
+        r"test_cases_old\1-correctitud\caso_4p_2pr_neg.json"
     )
+
     optimizer = BruteForce_MTFP_Solver(data)
 
     # Calcular el número total de combinaciones teóricas

@@ -24,7 +24,7 @@ class Person(BaseModel):
         skill (str): Habilidad de la persona (debe existir en InstanceData.skills)
     """
 
-    skills: List[str]
+    skill: str
 
 
 class Project(BaseModel):
@@ -90,7 +90,7 @@ class DataGenerator:
         # --- NUEVO: chequeo de viabilidad ---
         max_time = max(time_fractions)
         for skill in skills:
-            cap = sum(1 for p in people if skill in p.skills) * max_time
+            cap = sum(1 for p in people if p.skill == skill) * max_time
             req = sum(pr.requirements.get(skill, 0.0) for pr in projects)
             if req > cap + 1e-6:
                 print(
@@ -107,14 +107,8 @@ class DataGenerator:
 
     @staticmethod
     def _generate_people(num_people: int, skills: List[str]) -> List[Person]:
-        """Genera una lista de personas con una o más habilidades aleatorias."""
-        people = []
-        for _ in range(num_people):
-            # Asignar un número aleatorio de habilidades (e.g., de 1 a 3)
-            num_skills_to_assign = random.randint(1, min(3, len(skills)))
-            person_skills = random.sample(skills, num_skills_to_assign)
-            people.append(Person(skills=person_skills))
-        return people
+        """Genera una lista de personas con habilidades aleatorias."""
+        return [Person(skill=random.choice(skills)) for _ in range(num_people)]
 
     @staticmethod
     def _generate_projects(
@@ -127,7 +121,7 @@ class DataGenerator:
         max_time = max(time_fractions)
         min_fraction = min([f for f in time_fractions if f > 0], default=1.0)
         skill_capacity = {
-            skill: sum(1 for p in people if skill in p.skills) * max_time
+            skill: sum(1 for p in people if p.skill == skill) * max_time
             for skill in skills
         }
 
@@ -250,7 +244,7 @@ class DataGenerator:
         """Imprime la lista de personas."""
         print("\nPERSONAS:")
         for i, person in enumerate(people):
-            print(f"  Persona {i + 1}: Habilidades = {', '.join(person.skills)}")
+            print(f"  Persona {i + 1}: Habilidad = {person.skill}")
 
     @staticmethod
     def _print_projects(projects: List[Project]):
@@ -308,7 +302,7 @@ class MTFP_Optimizer:
         Personas con habilidad k.
         """
         return {
-            k: [i for i, p in enumerate(self.data.people) if k in p.skills]
+            k: [i for i, p in enumerate(self.data.people) if p.skill == k]
             for k in self.data.skills
         }
 
@@ -360,32 +354,32 @@ class MTFP_Optimizer:
             model.F, initialize=lambda m, f_idx: self.data.time_fractions[f_idx]
         )
 
-        # Parámetro que indica si la persona i tiene la habilidad k
-        model.HasSkill = pyo.Param(
-            model.P,
-            model.K,
-            initialize=lambda m, i, k: 1 if k in self.data.people[i].skills else 0,
-        )
-
         # -------------------------------------
         # Variables de Decisión
         # -------------------------------------
-        # x_{i,j,k}: Fracción de tiempo de la persona i en el proyecto j usando la habilidad k
+        # x_{i,j}: Fracción de tiempo de la persona i en el proyecto j
+
+        """
         model.x = pyo.Var(
             model.P,
             model.J,
-            model.K,
-            domain=pyo.NonNegativeReals,
-        )
+            domain=pyo.Reals,
+            bounds=(
+                min(self.data.time_fractions),
+                max(self.data.time_fractions),
+            ),  # <-- Ajustar límites según las fracciones de tiempo permitidas, ej: [0.0, 0.5, 1.0], aquí se ajusta a del minimo al máximo dado, seguna las fracciones de tiempo permitidas.
+        )"""
 
-        # x_total_{i,j}: Fracción de tiempo TOTAL de la persona i en el proyecto j
-        model.x_total = pyo.Var(
+        # x_{i,j}: Fracción de tiempo de la persona i en el proyecto j
+        # MODIFICADO: Dominio NonNegativeReals, sin bounds explícitos aquí.
+        # Su valor será determinado por y_choice.
+        model.x = pyo.Var(
             model.P,
             model.J,
             domain=pyo.NonNegativeReals,
         )
 
-        # y_choice_{i,j,f}: Variable binaria que es 1 si la fracción f se elige para x_total_{i,j}
+        # y_choice_{i,j,f}: Variable binaria que es 1 si la fracción f se elige para x_{i,j}
         model.y_choice = pyo.Var(model.P, model.J, model.F, domain=pyo.Binary)
 
         # -------------------------------------
@@ -393,39 +387,27 @@ class MTFP_Optimizer:
         # -------------------------------------
         @model.Constraint(model.P)
         def total_time(m, i):
-            """Restricción (2): ∑_{j∈J} x_total_{i,j} ≤ 1 ∀i∈P
+            """Restricción (2): ∑_{j∈J} x_{i,j} ≤ 1 ∀i∈P
             Las personas pueden ocupar un máximo de todo su tiempo en los proyectos (No mayor a 1 -> 100%).
             """
-            return sum(m.x_total[i, j] for j in m.J) <= 1
+            return sum(m.x[i, j] for j in m.J) <= 1
 
         @model.Constraint(model.J, model.K)
         def skill_requirement(m, j, k):
-            """Restricción (3): ∑_{i∈P} x_{i,j,k} = R_{k,j} ∀j∈J, ∀k∈K
+            """Restricción (3): ∑_{i∈Q_k} x_{i,j} ≥ R_{k,j} ∀j∈J, ∀k∈K
             Las personas con habilidad k deben cumplir los requerimientos del proyecto j.
-            La restricción HasSkill_rule se encarga de que solo aporten personas con esa habilidad.
             """
-            return sum(m.x[i, j, k] for i in m.P) == m.R[j, k]
+            return sum(m.x[i, j] for i in m.Q[k]) == m.R[j, k]
 
-        # Restricción para asegurar que una persona solo puede ser asignada con una habilidad que posee
-        @model.Constraint(model.P, model.J, model.K)
-        def HasSkill_rule(m, i, j, k):
-            # La dedicación máxima es 1, por lo que esto funciona como una restricción Big-M
-            return m.x[i, j, k] <= m.HasSkill[i, k]
-
-        # Restricción para enlazar la variable de tiempo total con la de tiempo por habilidad
-        @model.Constraint(model.P, model.J)
-        def link_x_total_rule(m, i, j):
-            return m.x_total[i, j] == sum(m.x[i, j, k] for k in m.K)
-
-        # Restricción para asegurar que se elija exactamente una fracción de tiempo para cada x_total_{i,j}
+        # Restricción para asegurar que se elija exactamente una fracción de tiempo para cada x_{i,j}
         @model.Constraint(model.P, model.J)
         def force_one_fraction_rule(m, i, j):
             return sum(m.y_choice[i, j, f_idx] for f_idx in m.F) == 1
 
-        # Restricción para definir x_total_{i,j} basado en la y_choice seleccionada
+        # Restricción para definir x_{i,j} basado en la y_choice seleccionada
         @model.Constraint(model.P, model.J)
         def define_x_from_choice_rule(m, i, j):
-            return m.x_total[i, j] == sum(
+            return m.x[i, j] == sum(
                 m.tf_map[f_idx] * m.y_choice[i, j, f_idx] for f_idx in m.F
             )
 
@@ -436,17 +418,17 @@ class MTFP_Optimizer:
             """Objetivo: Maximizar E = ∑_{j∈J} w_j * e_j"""
             total_efficiency = 0.0
             for j in m.J:
-                # Numerador: ∑_{i,h∈P} S_{i,h}*x_total_{i,j}*x_total_{h,j}
+                # Numerador: ∑_{i,h∈P} S_{i,h}x_{i,j}x_{h,j}
                 numerator = sum(
-                    m.S[i1, i2] * m.x_total[i1, j] * m.x_total[i2, j]
-                    for i1 in m.P
-                    for i2 in m.P
+                    m.S[i1, i2] * m.x[i1, j] * m.x[i2, j] for i1 in m.P for i2 in m.P
                 )
 
                 # Denominador: (∑_{k∈K} R_{k,j})²
+                # denominator = sum(m.R[j, k] for k in m.K) ** 2
                 T = sum(m.R[j, k] for k in m.K)
-                denominator = T**2
+                denominator = T**2  # T^2
                 ej = (1 + numerator / denominator) / 2 if denominator != 0 else 0.0
+                # ej = 0.5 * (1 + numerator / denominator) if denominator != 0 else 0.0
 
                 total_efficiency += m.w[j] * ej
             return total_efficiency
@@ -494,20 +476,10 @@ class MTFP_Optimizer:
                 print(f"   -> {skill}: {req}")
 
             print(f"\n - Equipo asignado:")
-            team = [
-                i for i in self.model.P if pyo.value(self.model.x_total[i, j]) > 0.001
-            ]
+            team = [i for i in self.model.P if pyo.value(self.model.x[i, j]) > 0.01]
             for i in team:
-                alloc = pyo.value(self.model.x_total[i, j])
-                person_skills = ", ".join(self.data.people[i].skills)
-                print(
-                    f"   -> Persona {i} ({person_skills}): {alloc:.1%} de tiempo total."
-                )
-                # Detalle de tiempo por habilidad
-                for k in self.model.K:
-                    skill_alloc = pyo.value(self.model.x[i, j, k])
-                    if skill_alloc > 0.001:
-                        print(f"      - {k}: {skill_alloc:.1%}")
+                alloc = pyo.value(self.model.x[i, j])
+                print(f"   -> Persona {i} ({self.data.people[i].skill}): {alloc:.1%}")
 
             print(f"\n - Cálculo de Eficiencia (e_{j+1}):")
             print(f"   • Suma de afinidades: {numerator:.2f}")
@@ -551,11 +523,7 @@ class MTFP_Optimizer:
         """Calcula la eficiencia de un proyecto (e_j)."""
         # Convertir el generador en una suma evaluada
         numerator = sum(
-            pyo.value(
-                self.model.S[i1, i2]
-                * self.model.x_total[i1, j]
-                * self.model.x_total[i2, j]
-            )
+            pyo.value(self.model.S[i1, i2] * self.model.x[i1, j] * self.model.x[i2, j])
             for i1 in self.model.P
             for i2 in self.model.P
         )
@@ -569,23 +537,152 @@ class MTFP_Optimizer:
         return ej, numerator, denominator
 
 
+class MTFP_Optimizer_Relax(MTFP_Optimizer):
+    """
+    Implementa una versión relajada del modelo MTFP.
+    Hereda de MTFP_Optimizer y modifica las restricciones y el objetivo
+    para permitir soluciones parciales cuando el problema es inviable.
+    """
+
+    def __init__(self, data: InstanceData, penalty_weight: float = 1000.0):
+        """
+        Inicializa el modelo relajado.
+
+        Parámetros:
+            data (InstanceData): Datos del problema.
+            penalty_weight (float): Factor de penalización por cada unidad
+                                    de requerimiento no cumplido.
+        """
+        self.penalty_weight = penalty_weight
+        # Llama al init del padre, pero no dejamos que construya el modelo aún.
+        self.data = data
+        self.Q = self._build_skill_groups()
+        # Construimos nuestro propio modelo sobreescribiendo el método.
+        self.model = self._build_model()
+
+    def _build_model(self) -> pyo.ConcreteModel:
+        """
+        Construye el modelo de optimización con variables de holgura (shortfall)
+        para relajar la restricción de requerimientos.
+        """
+        # Usamos la implementación base y la modificamos
+        model = super()._build_model()
+
+        # 1. Añadir variable de holgura (shortfall)
+        model.shortfall = pyo.Var(model.J, model.K, domain=pyo.NonNegativeReals)
+
+        # 2. Relajar la restricción de requerimientos
+        # Pyomo permite reemplazar componentes existentes.
+        model.del_component(model.skill_requirement)
+
+        @model.Constraint(model.J, model.K)
+        def skill_requirement_relaxed(m, j, k):
+            """Restricción (3) Relajada: ∑_{i∈Q_k} x_{i,j} + shortfall_{j,k} = R_{k,j}"""
+            provided = sum(m.x[i, j] for i in m.Q[k])
+            return provided + m.shortfall[j, k] == m.R[j, k]
+
+        # 3. Modificar la función objetivo para penalizar el shortfall
+        model.del_component(model.obj)
+
+        def objective_rule_relaxed(m):
+            """Objetivo: Maximizar Eficiencia - Penalización por Shortfall"""
+            total_efficiency = 0.0
+            for j in m.J:
+                numerator = sum(
+                    m.S[i1, i2] * m.x[i1, j] * m.x[i2, j] for i1 in m.P for i2 in m.P
+                )
+                T = sum(m.R[j, k] for k in m.K)
+                denominator = T**2
+                ej = (1 + numerator / denominator) / 2 if denominator != 0 else 0.0
+                total_efficiency += m.w[j] * ej
+
+            # Penalizar fuertemente el shortfall para minimizarlo
+            penalty = self.penalty_weight * sum(
+                m.shortfall[j, k] for j in m.J for k in m.K
+            )
+            return total_efficiency - penalty
+
+        model.obj = pyo.Objective(rule=objective_rule_relaxed, sense=pyo.maximize)
+
+        return model
+
+    def pretty_print(self, time_elapsed: Optional[float] = None):
+        """Muestra los resultados del modelo relajado, incluyendo el shortfall."""
+
+        print("\n" + "=" * 50)
+        print(" RESULTADOS DE LA OPTIMIZACIÓN (RELAJADA) ".center(50, "="))
+        print("=" * 50)
+
+        total_efficiency = 0.0
+        total_model_shortfall = 0.0
+
+        for j in self.model.J:
+            project = self.data.projects[j]
+            ej, numerator, denominator = self._project_efficiency(j)
+            weighted_ej = pyo.value(self.model.w[j] * ej)
+            total_efficiency += weighted_ej
+
+            print(f"\n{'='*50}")
+            print(f" PROYECTO {j+1} ".center(50, "="))
+            print(f" - Peso: {project.weight:.2%}")
+
+            print(f"\n - Estado de Requerimientos:")
+            total_shortfall_project = 0
+            for k in self.data.skills:
+                req_val = pyo.value(self.model.R[j, k])
+                if req_val > 1e-6:
+                    shortfall_val = pyo.value(self.model.shortfall[j, k])
+                    provided_val = req_val - shortfall_val
+                    status = (
+                        "CUMPLIDO"
+                        if shortfall_val < 1e-6
+                        else f"FALTANTE: {shortfall_val:.2f}"
+                    )
+                    print(
+                        f"   -> {k}: Req={req_val:.2f}, Prov={provided_val:.2f} -> {status}"
+                    )
+                    total_shortfall_project += shortfall_val
+
+            total_model_shortfall += total_shortfall_project
+            if total_shortfall_project < 1e-6:
+                print(
+                    "   -> ¡Todos los requerimientos para este proyecto fueron cumplidos!"
+                )
+
+            print(f"\n - Equipo asignado:")
+            team = [i for i in self.model.P if pyo.value(self.model.x[i, j]) > 0.01]
+            if not team:
+                print("   -> Ninguna persona asignada a este proyecto.")
+            else:
+                for i in team:
+                    alloc = pyo.value(self.model.x[i, j])
+                    print(
+                        f"   -> Persona {i} ({self.data.people[i].skill}): {alloc:.1%}"
+                    )
+
+            print(f"\n - Cálculo de Eficiencia (e_{j+1}):")
+            print(f"   • Suma de afinidades: {numerator:.2f}")
+            print(f"   • Denominador: T^2 = {denominator:.2f}")
+            print(
+                f"   • e_{j+1} = (1 + {numerator:.2f}/{denominator:.2f})/2 = {ej:.2%}"
+            )
+            print(f"   • Contribución Global: {weighted_ej:.2%}")
+
+        print(f"\n{' EFICIENCIA GLOBAL TOTAL: ':=^50}")
+        print(f"{total_efficiency:.2%}".center(50))
+        if total_model_shortfall > 1e-6:
+            print(f"\n{' DÉFICIT TOTAL DE HABILIDADES: ':=^50}")
+            print(f"{total_model_shortfall:.2f}".center(50))
+
+        if time_elapsed is not None:
+            print(f"\nTiempo de ejecución: {time_elapsed:.2f} segundos")
+
+
 if __name__ == "__main__":
 
     dataGen = DataGenerator()
-
-    data = dataGen.generate_random_instance(
-        num_people=20,  # Reducido para pruebas iniciales con el modelo más complejo
-        num_projects=3,
-        skills=[
-            "Backend",
-            "Frontend",
-            "DevOps",
-            "QA",
-            "UX/UI",
-        ],
-        time_fractions=[0.0, 0.5, 1.0],
-        positive_prob=0.3,
-        seed=42,
+    data = DataGenerator.load_from_json(
+        r"test_cases_old\6-inviable\infeasible_15p_4pr_multi_skill_shortage.json"
     )
 
     start_time = time.time()
@@ -596,3 +693,27 @@ if __name__ == "__main__":
         optimizer.pretty_print(time_elapsed=elapsed)
     else:
         optimizer.pretty_print_infeasible(results=results, time_elapsed=elapsed)
+        print("=" * 50)
+        print(
+            "Se buscará una solución parcial minimizando el déficit de habilidades..."
+        )
+
+        # Puedes ajustar el `penalty_weight` aquí. Un valor más alto fuerza
+        # al solver a priorizar el cumplimiento de los requerimientos.
+        optimizer_relaxed = MTFP_Optimizer_Relax(data, penalty_weight=1000)
+
+        start_time_relaxed = time.time()
+        results_relaxed = optimizer_relaxed.solve(solver="bonmin", tee=False)
+        elapsed_relaxed = time.time() - start_time_relaxed
+
+        if (
+            results_relaxed.solver.termination_condition
+            == pyo.TerminationCondition.optimal
+        ):
+            print("\n>>> Solución Óptima Encontrada para el Modelo Relajado.")
+            optimizer_relaxed.pretty_print(time_elapsed=elapsed_relaxed)
+        else:
+            print("\n>>> El Modelo Relajado también resultó Inviable.")
+            optimizer_relaxed.pretty_print_infeasible(
+                results=results_relaxed, time_elapsed=elapsed_relaxed
+            )
