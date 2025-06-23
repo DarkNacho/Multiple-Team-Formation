@@ -239,7 +239,7 @@ class BruteForce_MTFP_Solver:
 if __name__ == "__main__":
     dataGen = DataGenerator()
     data = DataGenerator.load_from_json(
-        r"test_cases_old\1-correctitud\caso_4p_2pr_neg.json"
+        r"test_cases\1-correctitud\sobreasignacion.json"
     )
 
     optimizer = BruteForce_MTFP_Solver(data)

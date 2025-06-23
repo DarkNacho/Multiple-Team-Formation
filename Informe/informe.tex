@@ -172,7 +172,7 @@ El modelo está sujeto a un conjunto de restricciones que reflejan las limitacio
 
 \begin{align}
     \sum_{l \in \mathcal{P}} x_{il}  & \leq 1,                                     &  & \forall i \in \mathcal{H} \label{eq:constraint_capacity_updated}                              \\
-    \sum_{i \in Q_a} x_{il}          & \geq r_{al},                                &  & \forall a \in \mathcal{K}, \forall l \in \mathcal{P} \label{eq:constraint_skills_updated}     \\
+    \sum_{i \in Q_a} x_{il}          & = r_{al},                                   &  & \forall a \in \mathcal{K}, \forall l \in \mathcal{P} \label{eq:constraint_skills_updated}     \\
     \sum_{d \in \mathcal{D}} y_{ild} & = 1,                                        &  & \forall i \in \mathcal{H}, \forall l \in \mathcal{P} \label{eq:constraint_force_one_fraction} \\
     x_{il}                           & = \sum_{d \in \mathcal{D}} d \cdot y_{ild}, &  & \forall i \in \mathcal{H}, \forall l \in \mathcal{P} \label{eq:constraint_define_x_from_y}
 \end{align}
@@ -182,7 +182,7 @@ Estas restricciones se interpretan de la siguiente manera en el contexto del pro
 \begin{itemize}
     \item \textbf{Restricción de Capacidad Individual (Ecuación \ref{eq:constraint_capacity_updated})}: Esta restricción asegura que la asignación total de tiempo de un individuo \(i\) a todos los proyectos (\(\sum_{l \in \mathcal{P}} x_{il}\)) no exceda su disponibilidad total, que se normaliza a 1 (representando el 100\% de su tiempo laboral disponible). En el mundo real, esto significa que una persona no puede ser asignada a más trabajo del que puede realizar. Limita la sobrecarga de los individuos y refleja la finitud de los recursos humanos.
 
-    \item \textbf{Restricción de Requerimientos de Habilidad por Proyecto (Ecuación \ref{eq:constraint_skills_updated})}: Esta restricción garantiza que para cada proyecto \(l\) y cada habilidad \(a\), la suma de las fracciones de tiempo de todas las personas (\(i \in Q_a\)) que poseen dicha habilidad y son asignadas al proyecto, sea al menos igual a la cantidad mínima requerida (\(r_{al}\)) de esa habilidad para ese proyecto. En la práctica, esto asegura que cada proyecto cuente con la cobertura mínima necesaria de competencias técnicas para su ejecución. Si un proyecto necesita, por ejemplo, el equivalente a 2 ingenieros de software a tiempo completo, esta restricción asegura que la suma de las asignaciones parciales de los ingenieros de software a ese proyecto alcance ese umbral.
+    \item \textbf{Restricción de Requerimientos de Habilidad por Proyecto (Ecuación \ref{eq:constraint_skills_updated})}: Esta restricción garantiza que para cada proyecto \(l\) y cada habilidad \(a\), la suma de las fracciones de tiempo de todas las personas (\(i \in Q_a\)) que poseen dicha habilidad y son asignadas al proyecto, sea \textbf{exactamente igual} a la cantidad requerida (\(r_{al}\)). Se optó por una igualdad estricta en lugar de una desigualdad (\(\geq\)) por una razón fundamental: evitar la sobreasignación de recursos. Si se permitiera una asignación mayor o igual, la función objetivo, en su afán por maximizar la afinidad social, tendería a asignar a todas las personas disponibles con afinidades positivas, incluso si exceden con creces los requerimientos técnicos. La igualdad impone un principio de eficiencia de recursos, asegurando que los equipos se dimensionen precisamente según las necesidades, lo que se alinea mejor con objetivos de control de costos y gestión práctica. Esta rigidez, sin embargo, es una de las principales causas de inviabilidad del modelo, lo que justifica la posterior introducción de un mecanismo de relajación.
 
     \item \textbf{Restricción de Selección Única de Fracción de Tiempo (Ecuación \ref{eq:constraint_force_one_fraction})}: Para cada par individuo-proyecto \((i,l)\), esta restricción asegura que se seleccione exactamente una fracción de tiempo \(d\) del conjunto de fracciones permitidas \(\mathcal{D}\). Esto implica que si un individuo no es asignado a un proyecto, la fracción seleccionada debe ser 0 (asumiendo que \(0 \in \mathcal{D}\)).
 
@@ -266,12 +266,13 @@ Los resultados, resumidos en la Tabla \ref{tab:correctitud}, muestran una coinci
     \label{tab:correctitud}
     \begin{tabularx}{\linewidth}{@{}lccc@{}}
         \toprule
-        \textbf{Instancia}               & \textbf{Efic. Global (F. Bruta)} & \textbf{Efic. Global (Solver)}   \\
-        (Personas/Proyectos/Habilidades) &                                  &                                & \\
+        \textbf{Instancia}               & \textbf{Eficiencia Global} & \textbf{Eficiencia Global} \\
+        (Personas/Proyectos/Habilidades) & \textbf{Fuerza Bruta}      & \textbf{Solver}            \\
         \midrule
-        2p / 1pr / 1sk (afin. pos)       & 100.00\%                         & 100.00\%                         \\
-        3p / 2pr / 2sk (afin. mix)       & 100.00\%                         & 100.00\%                         \\
-        4p / 2pr / 2sk (afin. nega)      & 75.00\%                          & 75.00\%                          \\
+        2p / 1pr / 1sk (afin. pos)       & 100.00\%                   & 100.00\%                   \\
+        3p / 2pr / 2sk (afin. mix)       & 100.00\%                   & 100.00\%                   \\
+        4p / 2pr / 2sk (afin. nega)      & 75.00\%                    & 75.00\%                    \\
+        6p / 1pr / 2sk (excedente)       & 75.00\%                    & 75.00\%                    \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -310,11 +311,12 @@ Se analizó cómo la granularidad de las fracciones de tiempo permitidas (\(\mat
     \label{tab:discretizacion}
     \begin{tabularx}{\linewidth}{@{}lccc@{}}
         \toprule
-        \textbf{Fracciones Permitidas (\(\mathcal{D}\))} & \textbf{Efic. Global} & \textbf{T. Solver (s)} & \textbf{T. F. Bruta (s)} \\
+        \textbf{Fracciones Permitidas (\(\mathcal{D}\))} & \textbf{Eficiencia} & \textbf{Tiempo}     & \textbf{Tiempo}           \\
+                                                         & \textbf{Global}     & \textbf{Solver (s)} & \textbf{Fuerza Bruta (s)} \\
         \midrule
-        \{0, 1\}                                         & 88.89\%               & 0.18                   & 0.04                     \\
-        \{0, 0.5, 1\}                                    & 88.89\%               & 0.13                   & 3.56                     \\
-        \{0, 0.25, 0.5, 0.75, 1\}                        & 88.89\%               & 0.13                   & 1407.97                  \\
+        \{0, 1\}                                         & 88.89\%             & 0.18                & 0.04                      \\
+        \{0, 0.5, 1\}                                    & 88.89\%             & 0.13                & 3.56                      \\
+        \{0, 0.25, 0.5, 0.75, 1\}                        & 88.89\%             & 0.13                & 1407.97                   \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -332,13 +334,13 @@ Para medir la capacidad del modelo de gestionar conflictos interpersonales, se c
     \label{tab:robustez}
     \begin{tabularx}{\linewidth}{@{}lcccc@{}}
         \toprule
-        \textbf{Proporción Negativas} & \textbf{Eficiencia Global} & \textbf{Tiempo (s)} & \textbf{Estado} \\
+        \textbf{Proporción Negativas} & \textbf{Eficiencia Global} \\
         \midrule
-        50\%                          & 55.56\%                    & 0.28                & Óptimo          \\
-        60\%                          & 38.89\%                    & 0.15                & Óptimo          \\
-        80\%                          & 33.33\%                    & 0.12                & Óptimo          \\
-        90\%                          & 22.22\%                    & 0.14                & Óptimo          \\
-        100\%                         & 22.22\%                    & 0.12                & Óptimo          \\
+        50\%                          & 55.56\%                    \\
+        60\%                          & 38.89\%                    \\
+        80\%                          & 33.33\%                    \\
+        90\%                          & 22.22\%                    \\
+        100\%                         & 22.22\%                    \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -354,10 +356,10 @@ Se evaluó si el modelo responde correctamente a los pesos (\(w_l\)) asignados a
     \label{tab:sensibilidad}
     \begin{tabularx}{\linewidth}{@{}lcccc@{}}
         \toprule
-        \textbf{Pesos (P1, P2)} & \textbf{Efic. P1} & \textbf{Efic. P2} & \textbf{Efic. Global} & \textbf{Tiempo (s)} \\
+        \textbf{Pesos (P1, P2)} & \textbf{Eficiencia P1} & \textbf{Eficiencia P2} & \textbf{Eficiencia Global} \\
         \midrule
-        (80\%, 20\%)            & 88.89\%           & 77.78\%           & 86.67\%               & 0.13                \\
-        (95\%, 5\%)             & 88.89\%           & 77.78\%           & 88.33\%               & 0.13                \\
+        (80\%, 20\%)            & 88.89\%                & 77.78\%                & 86.67\%                    \\
+        (95\%, 5\%)             & 88.89\%                & 77.78\%                & 88.33\%                    \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -367,9 +369,22 @@ En ambos experimentos, el modelo asignó el mismo conjunto de personas a cada pr
 \subsection{Gestión de Casos Inviables y Relajación del Modelo}
 Finalmente, se probó la robustez del modelo ante escenarios sin solución factible. Para ello, se implementó un enfoque de dos etapas. Primero, se intenta resolver el modelo estricto. Si el solver reporta que la instancia es inviable (\textit{infeasible}), se activa un segundo modelo relajado.
 
-Este modelo relajado introduce variables de holgura (déficit) en la restricción de requerimientos de habilidad (Ecuación \ref{eq:constraint_skills_updated}), permitiendo que no se cumplan por completo. Para asegurar que el modelo aún intente satisfacer la mayor cantidad de requerimientos posible, se modifica la función objetivo (Ecuación \ref{eq:objective_total_updated}) para incluir una fuerte penalización proporcional a la suma de todos los déficits.
+Este modelo relajado introduce variables de holgura (déficit) en la restricción de requerimientos de habilidad, permitiendo que no se cumplan por completo. Para asegurar que el modelo aún intente satisfacer la mayor cantidad de requerimientos posible, se modifica la función objetivo para incluir una fuerte penalización proporcional a la suma de todos los déficits.
 
-Este mecanismo no solo evita un fallo total, sino que proporciona información de gran valor para la gestión: la solución del modelo relajado muestra la mejor asignación parcial posible y cuantifica con precisión qué habilidades faltan en cada proyecto y en qué cantidad. Esto permite a los gestores tomar decisiones informadas, como contratar nuevo personal con habilidades específicas o renegociar el alcance de un proyecto.
+Matemáticamente, se introduce una nueva variable de déficit \(\delta_{al} \geq 0\). La restricción de requerimientos (Ecuación \ref{eq:constraint_skills_updated}) se reemplaza por:
+\begin{equation}
+    \sum_{i \in Q_a} x_{il} + \delta_{al} = r_{al}, \quad \forall a \in \mathcal{K}, \forall l \in \mathcal{P}
+    \label{eq:constraint_skills_relaxed}
+\end{equation}
+
+Y la función objetivo (Ecuación \ref{eq:objective_total_updated}) se modifica para penalizar este déficit:
+\begin{equation}
+    \max E_{\text{relajado}} = \left( \sum_{l \in \mathcal{P}} w_l \cdot e_l \right) - \lambda \sum_{l \in \mathcal{P}} \sum_{a \in \mathcal{K}} \delta_{al}
+    \label{eq:objective_total_relaxed}
+\end{equation}
+donde \(\lambda\) es un coeficiente de penalización suficientemente grande para forzar al solver a minimizar el déficit.
+
+Este mecanismo no solo evita un fallo total, sino que proporciona información de gran valor para la gestión...
 
 Los resultados de las pruebas sobre instancias inviables (Tabla \ref{tab:infeasible}) confirman la efectividad de este enfoque. El modelo estricto identifica correctamente la inviabilidad, y el modelo relajado procede a encontrar una solución óptima parcial. La tabla detalla la eficiencia global alcanzada a pesar de la inviabilidad y el \textbf{déficit total}, que representa la suma de todas las unidades de habilidad (medidas en personas-equivalente) que no pudieron ser asignadas para cumplir con los requerimientos originales de los proyectos.
 
@@ -379,13 +394,13 @@ Los resultados de las pruebas sobre instancias inviables (Tabla \ref{tab:infeasi
     \label{tab:infeasible}
     \begin{tabularx}{\linewidth}{@{}lrrr@{}}
         \toprule
-        \textbf{Instancia}               & \textbf{Efic. Global} & \textbf{Déficit Total} & \textbf{Tiempo (s)} \\
-        (Personas/Proyectos/Habilidades) &                       &                        &                     \\
+        \textbf{Instancia}               & \textbf{Eficiencia Global} & \textbf{Déficit Total} \\
+        (Personas/Proyectos/Habilidades) &                            &                        \\
         \midrule
-        4p / 2pr / 2sk                   & 66.39\%               & 3.0                    & 0.12                \\
-        6p / 2pr / 2sk                   & 54.32\%               & 12.0                   & 0.10                \\
-        10p / 3pr / 2sk                  & 79.93\%               & 1.5                    & 0.25                \\
-        15p / 4pr / 5sk                  & 66.80\%               & 3.0                    & 16.23               \\
+        4p / 2pr / 2sk                   & 66.39\%                    & 3.0                    \\
+        6p / 2pr / 2sk                   & 54.32\%                    & 12.0                   \\
+        10p / 3pr / 2sk                  & 79.93\%                    & 1.5                    \\
+        15p / 4pr / 5sk                  & 66.80\%                    & 3.0                    \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -397,9 +412,11 @@ Los resultados de las pruebas sobre instancias inviables (Tabla \ref{tab:infeasi
 \section{Conclusiones y Trabajo Futuro}
 Este trabajo ha presentado un modelo de Programación No Lineal Entera Mixta (MINLP) para el Problema de Formación de Múltiples Equipos (MTFP), que integra de manera efectiva los requerimientos técnicos de los proyectos con la cohesión social de los equipos, ponderada por la prioridad estratégica de cada proyecto. La implementación, utilizando Pyomo y el solver Bonmin, ha demostrado ser una herramienta robusta y eficaz para abordar este complejo problema de asignación.
 
-Los resultados experimentales validan la efectividad y aplicabilidad del modelo. Se ha confirmado su \textbf{correctitud} al replicar las soluciones óptimas de un método de fuerza bruta en instancias pequeñas. El análisis de \textbf{escalabilidad} muestra que el modelo es capaz de resolver problemas de tamaño realista (100 personas) en tiempos computacionales razonables, lo que subraya su viabilidad práctica. Los experimentos de \textbf{robustez} demostraron que el modelo gestiona adecuadamente los conflictos interpersonales, penalizando las afinidades negativas y confirmando el comportamiento teórico de la métrica de eficiencia, la cual no colapsa a cero debido a la contribución de las auto-afinidades y la necesidad de cumplir con los requerimientos técnicos. Además, el modelo ha probado ser sensible a la \textbf{prioridad de los proyectos} y es capaz de identificar correctamente \textbf{casos inviables}, lo que constituye una característica valiosa para la planificación.
+Los resultados experimentales validan la efectividad y aplicabilidad del modelo. Se ha confirmado su \textbf{correctitud} al replicar las soluciones óptimas de un método de fuerza bruta en instancias pequeñas. El análisis de \textbf{escalabilidad} muestra que el modelo es capaz de resolver problemas de tamaño realista (100 personas) en tiempos computacionales razonables, lo que subraya su viabilidad práctica. Los experimentos de \textbf{robustez} demostraron que el modelo gestiona adecuadamente los conflictos interpersonales y es sensible a la \textbf{prioridad de los proyectos}.
 
-Como \textbf{trabajo futuro}, se proponen varias líneas de extensión. Primero, se podría enriquecer el modelo para incluir habilidades secundarias en los individuos y penalizar la sobreasignación de recursos, lo que añadiría un mayor realismo. Segundo, se propone explorar una reinterpretación de la matriz de afinidad ($s_{ij}$) para capturar factores más complejos; por ejemplo, la auto-afinidad ($s_{ii}$) podría modelar el bienestar o nivel de agotamiento de un individuo, mientras que la afinidad interpersonal podría reflejar una compatibilidad profesional efectiva que puede diferir de la simpatía personal. Esto aumentaría el realismo del modelo sin cambiar su estructura matemática, dependiendo de una evaluación experta para definir estos parámetros. Finalmente, se podría evaluar el rendimiento del modelo con otros solvers MINLP o desarrollar heurísticas específicas para resolver instancias de muy grande escala de manera más rápida, aunque potencialmente subóptima.
+Una de las contribuciones más significativas de este trabajo es la gestión de \textbf{casos inviables}. El modelo no solo identifica la inviabilidad, sino que, a través de un mecanismo de relajación de dos etapas, proporciona una solución parcial óptima. Esta solución cuantifica con precisión el déficit de habilidades para cada proyecto, ofreciendo información de gran valor para la toma de decisiones estratégicas, como la contratación de personal, la capacitación o la renegociación del alcance de los proyectos. Esta capacidad transforma el modelo de una simple herramienta de asignación a un sistema de apoyo diagnóstico para la planificación de recursos.
+
+Como \textbf{trabajo futuro}, se proponen varias líneas de extensión. Primero, se podría enriquecer el modelo para incluir habilidades secundarias en los individuos y penalizar la sobreasignación de recursos. Segundo, se propone explorar una reinterpretación de la matriz de afinidad ($s_{ij}$) para capturar factores más complejos, como el bienestar individual ($s_{ii}$) o la compatibilidad profesional efectiva. Tercero, el mecanismo de relajación podría sofisticarse, permitiendo penalizaciones diferenciadas por proyecto o habilidad, o incluso la exclusión automática de proyectos si su déficit supera un umbral crítico. Finalmente, se podría evaluar el rendimiento del modelo con otros solvers MINLP o desarrollar heurísticas específicas para resolver instancias de muy grande escala de manera más rápida, aunque potencialmente subóptima.
 
 
 \begin{thebibliography}{00}

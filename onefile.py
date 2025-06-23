@@ -682,7 +682,7 @@ if __name__ == "__main__":
 
     dataGen = DataGenerator()
     data = DataGenerator.load_from_json(
-        r"test_cases_old\6-inviable\infeasible_15p_4pr_multi_skill_shortage.json"
+        r"test_cases\1-correctitud\sobreasignacion.json"
     )
 
     start_time = time.time()
